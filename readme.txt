@@ -1,36 +1,20 @@
-# Foobar
+# flask_api
 
-Foobar is a Python application for dealing with word pluralization.
+flask_api is a Python application for test api rest on flask and using postgresql
 
 ## Installation
 
 Clone the repository from GitHub. Then create a virtual environment, and install all the dependencies.
 
 ```bash
-git clone https://github.com/username/foobar.git
-python3 -m venv env
-source env/bin/activate
+git clone git@github.com:zvic81/flask_api.git
 python -m pip install -r requirements.txt
 ```
 
 ## Usage
 
-Initialize the virtual environment, and run the script
 
-```bash
-source env/bin/activate
-./pluralize word
-words
-./pluralize goos
-geese
-```
 
 ## Contributing
 
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
-Please make sure to update the tests as appropriate.
-
-## License
-
-[MIT](https://choosealicense.com/licenses/mit/)
