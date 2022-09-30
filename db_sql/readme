@@ -1,0 +1,7 @@
+# run in bash
+su - postgres
+psql
+create database flask_db;
+\q
+psql -h localhost -d flask_db -f flask_db.sql
+

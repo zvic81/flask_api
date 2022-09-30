@@ -4,7 +4,7 @@ user = "flask_user"
 password = "flask_user"
 db_name = "flask_db"
 
-index_mes=''' Use GET <i>http://127.0.0.1:5000/goods</i> for all goods<p>
+index_mes=''' Use GET <a href=http://127.0.0.1:5000/goods>http://127.0.0.1:5000/goods</a> for all goods<p>
     GET <i>http://127.0.0.1:5000/goods/3</i> for goods id=3<p>
     POST <i>http://127.0.0.1:5000/goods</i> for append goods with json<p>
     PUT <i>http://127.0.0.1:5000/goods/3</i> for change goods id=3 with json<p>
