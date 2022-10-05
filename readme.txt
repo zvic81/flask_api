@@ -18,11 +18,12 @@ python3 -m pip install -r requirements.txt
 ```
 
  
-2)Check if exists database flask_db in postgres and exists user flask_user
-3) run in bash python3 main.py
-4) If no errors see Running on http://127.0.0.1:5000
-5) open in browser http://127.0.0.1:5000, there is available adresses
-6) use 'postman' for methods put post delete. format json: { "name":"bananas", "price":8, "manufacture_date":"2/11/11", "picture_url":"gogle.com" } 
+2)Check if exists database flask_db in postgres and exists user flask_user.
+3) Check and correct 'password' for user flask_user and "db_name" in file config.py
+4) run in bash python3 main.py
+5) If no errors see Running on http://127.0.0.1:5000
+6) open in browser http://127.0.0.1:5000, there is available adresses
+7) use 'postman' for methods put post delete. format json: { "name":"bananas", "price":8, "manufacture_date":"2/11/11", "picture_url":"gogle.com" } 
 
 
 
