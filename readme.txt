@@ -4,15 +4,20 @@ flask_api is a Python application for test api rest on flask and using postgresq
 
 ## Installation
 
-Clone the repository from GitHub. Then create a virtual environment, and install all the dependencies.
+Clone the repository from GitHub. Then install all the dependencies.
 
 ```bash
 git clone git@github.com:zvic81/flask_api.git
-python -m pip install -r requirements.txt
+python3 -m pip install -r requirements.txt
 ```
 
 ## Usage
-1) restore database from /db_sql. Command for bash in /db_sql/readme. Backup in flask_db.sql
+1) restore database from /db_sql.Backup in flask_db.sql Command for bash
+```bash
+./createFlaskDB.sh
+```
+
+ 
 2)Check if exists database flask_db in postgres and exists user flask_user
 3) run in bash python3 main.py
 4) If no errors see Running on http://127.0.0.1:5000
