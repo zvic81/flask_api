@@ -22,19 +22,19 @@ def index():
 @app.route('/goods', methods=['GET'])
 def get_goods():
     goods=db.select_all_db(connection)
-    return jsonify({'goods':goods})
+    return jsonify(goods),200
 
 @app.route('/goods/<int:good_id>', methods=['GET'])
 def get_good_id(good_id):
     good=db.select_id_db(connection,good_id)
     if len(good)==0:
-        abort(404)
-    return jsonify({'good': good})
+        return jsonify({'error':'no id '+str(good_id)}),404
+    return jsonify(good),200
 
 @app.route('/goods', methods=['POST'])
 def create_good():
-    if not request.json:# or not 'name' in request.json:
-        abort(400)
+    if not request.get_json(silent=True,force=True):
+        return jsonify({'error':'no json'}),400
     good=[
         request.json['name'],
         request.json.get('price',""),
@@ -42,27 +42,29 @@ def create_good():
         request.json.get('picture_url',"")
     ]
     res=db.insert_db(connection,good)
-    return jsonify({'result':res}),201
+    return jsonify({'append':res[0]}),201
 
 @app.route('/goods/<int:good_id>', methods=['PUT'])
 def put_good_id(good_id):
-    if not request.json:
-        abort(404)
+    if not request.get_json(silent=True,force=True):
+        return jsonify({'error':'no json'}),400
     good=[
         request.json['name'],
         request.json.get('price',""),
         request.json.get('manufacture_date',""),
         request.json.get('picture_url',"")
     ]
-    if not good:
-        abort(404)
     res=db.update_id_db(connection,good_id,good)
-    return jsonify({'result':res})
+    if not res:
+        return jsonify({'error':'no id '+str(good_id)}),404        
+    return jsonify({'update':good_id}),200
 
 @app.route('/goods/<int:good_id>', methods=['DELETE'])
 def delete_good_id(good_id):
     res=db.delete_id_db(connection,good_id)
-    return jsonify({'result':res})
+    if res[-1]=='0':
+        return jsonify({'Error':'no id '+str(good_id)}),404
+    return jsonify({'delete ':good_id}),200
 
 
 if __name__ == "__main__":
