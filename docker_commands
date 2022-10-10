@@ -1,0 +1,27 @@
+docker run hello-world
+docker build -t flask_api 
+docker images
+docker run -p5000:5000 flask_api
+ifconfig
+docker ps
+docker ps -a
+docker rm f139dc82e74a
+docker rm -f $(docker ps -a -q)
+docker build -t flask_api .
+telnet 192.168.0.103 5432
+find / -name pg_hba.conf
+sudo xed /etc/postgresql/13/main/pg_hba.conf
+sudo systemctl restart postgresql.service
+docker run -p5000:5000 flask_api
+docker rm -f $(docker ps -a -q)
+docker build -t flask_api .
+docker run -p5000:5000 flask_api
+docker rm -f $(docker ps -a -q)
+docker run -p5000:5000 flask_api -d
+docker ps
+docker ps -a
+docker images
+docker rmi
+docker rmi 568913d706ed 301e00152ff4
+docker images
+

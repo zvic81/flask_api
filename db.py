@@ -59,11 +59,11 @@ def update_id_db(connection,id,good_list):
             return 0
         g.execute("""
                     UPDATE goods SET name=%s,price=%s,manufacture_date=%s,
-                    picture_url=%s WHERE id=%s;""",(good_list[0],good_list[1],good_list[2],good_list[3],id))
+                    picture_url=%s WHERE id=%s;""", (good_list[0], good_list[1], good_list[2],good_list[3],id))
     return 1   
     
 # delete good=id
-def delete_id_db(connection,id):
+def delete_id_db(connection, id):
     with connection.cursor() as g:
         g.execute("""
                     DELETE FROM goods WHERE id=%s;""",(id,))

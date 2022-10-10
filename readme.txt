@@ -18,7 +18,7 @@ python3 -m pip install -r requirements.txt
 ```
 
  
-2)Check if exists database flask_db in postgres and exists user flask_user.
+2) Check if exists database flask_db in postgres and exists user flask_user.
 3) Check and correct 'password' for user flask_user and "db_name" in file config.py
 4) run in bash python3 main.py
 5) If no errors see Running on http://127.0.0.1:5000

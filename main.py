@@ -42,7 +42,7 @@ def create_good():
         request.json.get('picture_url',"")
     ]
     res=db.insert_db(connection,good)
-    return jsonify({'append':res[0]}),201
+    return jsonify({'id':res[0]}),201
 
 @app.route('/goods/<int:good_id>', methods=['PUT'])
 def put_good_id(good_id):
@@ -57,15 +57,15 @@ def put_good_id(good_id):
     res=db.update_id_db(connection,good_id,good)
     if not res:
         return jsonify({'error':'no id '+str(good_id)}),404        
-    return jsonify({'update':good_id}),200
+    return '',200
 
 @app.route('/goods/<int:good_id>', methods=['DELETE'])
 def delete_good_id(good_id):
     res=db.delete_id_db(connection,good_id)
     if res[-1]=='0':
-        return jsonify({'Error':'no id '+str(good_id)}),404
-    return jsonify({'delete ':good_id}),200
+        return jsonify({'error':'no id '+str(good_id)}),404
+    return '',200
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True,host='0.0.0.0')
