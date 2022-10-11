@@ -6,6 +6,7 @@ from config import host,user,password,db_name #config for database postgres
 import db
 
 app = Flask(__name__)
+app.url_map.strict_slashes = False
 
 connection=psycopg2.connect(
             host=host,
