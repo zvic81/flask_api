@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Welcome flask_api server</title>
+</head>
+<body>
+  <h2> This index page flask_api server </h2>
+  <h3> Use terminal and curl for access api server or use Postman</h3>
+  <p> GET <i>curl --location --request GET 'http://127.0.0.1:5000/goods' \</i> for all goods</p>
+  <p> GET <i>curl --location --request GET 'http://127.0.0.1:5000/goods/3' \</i> for goods id=3</p>
+  <p> POST <i>curl --location --request POST 'http://127.0.0.1:5000/goods' \
+    --header 'Content-Type: application/json' \
+    --data-raw '{
+        "name":"oranges",
+        "price":8,
+        "manufacture_date":"2/11/11",
+        "picture_url":"gogle.com"
+        }'</i> for append goods with json</p>
+  <p> PUT <i> curl --location --request PUT 'http://127.0.0.1:5000/goods/17' \
+    --header 'Content-Type: application/json' \
+    --data-raw '{
+        "name":"candy",
+        "price":8,
+        "manufacture_date":"2/11/11",
+        "picture_url":"gogle.com"
+        }'</i> for change goods id=3 with json</p>
+  <p> DELETE <i>curl --location --request DELETE 'http://127.0.0.1:5000/goods/17' \
+    --header 'Content-Type: application/json' \
+    --data-raw '{
+        "name":"oranges",
+        "price":8,
+        "manufacture_date":"2/11/11",
+        "picture_url":"gogle.com"
+        }'</i> for delete goods id=3</p>
+
+  <p> format json:
+    {
+    "name":"bananas",
+    "price":8,
+    "manufacture_date":"2/11/11",
+    "picture_url":"gogle.com"
+    }
+  </p>
+  <p><br> <hr> October 2022©{{ name }}</p>
+</body>
+</html>

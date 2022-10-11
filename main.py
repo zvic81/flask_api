@@ -1,6 +1,6 @@
-from flask import Flask,jsonify,abort,request
+from flask import Flask,jsonify,abort,request,render_template
 import psycopg2
-from config import host,user,password,db_name,index_mes #config for database postgres
+from config import host,user,password,db_name #config for database postgres
 # db.py - functions for bd access - select_all_db(connection),select_id_db(connection,id)
 #insert_db(connection,good_list),update_id_db(connection,id,good_list),delete_id_db(connection,id),close_db(connection)
 import db
@@ -17,7 +17,7 @@ connection.autocommit = True
 
 @app.route('/')
 def index():
-    return index_mes
+    return render_template('index.html', name='vzaharov')
 
 @app.route('/goods', methods=['GET'])
 def get_goods():
