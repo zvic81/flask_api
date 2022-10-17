@@ -1,12 +1,26 @@
-from flask import Flask, jsonify, abort, request, render_template
+from flask import Flask, jsonify, abort, request, redirect #render_template
 import psycopg2
+
+import os
+from flask.views import MethodView
+from flasgger import Swagger
 from config import host, user, password, db_name  # config for database postgres
 # db.py - functions for bd access - select_all_db(connection),select_id_db(connection,id)
 # insert_db(connection,good_list),update_id_db(connection,id,good_list),delete_id_db(connection,id),close_db(connection)
 import db
 
 app = Flask(__name__)
-app.url_map.strict_slashes = False
+app.url_map.strict_slashes = False #open /goods/ as /goods
+
+app.config['SWAGGER'] = {
+    'title': 'Flasgger Parsed Method/Function View Example',
+    'doc_dir': './templates'
+}
+swag = Swagger(
+    app,
+    template_file=os.path.join(
+        os.getcwd(), 'templates', 'openapi.yml'),
+    parse=True)
 
 connection = psycopg2.connect(
     host=host,
@@ -19,7 +33,8 @@ connection.autocommit = True
 
 @app.route('/')
 def index():
-    return render_template('index.html', name='vzaharov')
+    return redirect("http://localhost:5000/apidocs",code=302) #open swagger index page
+    # return render_template('index.html', name='vzaharov')
 
 
 @app.route('/goods', methods=['GET'])

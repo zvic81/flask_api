@@ -1,0 +1,227 @@
+openapi: 2.0.0
+info:
+  title: Flask_API specification
+  version: 1.0.1
+servers:
+  - url: http://localhost:5000
+    variables: {}
+    description: Development server
+paths:
+  /goods:
+    get:
+      summary: Method to get all goods
+      tags:
+        - goods
+      operationId: getAllGoods
+      responses:
+        '200':
+          description: goods response with list of short goods
+          content:
+            application/json:
+             schema:
+               type: array
+               items:
+                $ref: "#/components/schemas/short_good"
+    post:
+      summary: Method to create new good
+      tags:
+        - goods
+      operationId: postNewGood
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/full_good_no_id"
+      responses:
+        '201':
+          description: new good created
+          content:
+            application/json:
+             schema:
+                $ref: "#/components/schemas/response_ok"
+        '400':
+          description: no json
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: no json
+
+
+  /goods/{good_id}:
+    get:
+      summary: Method to get goods by id
+      tags:
+        - goods
+      operationId: getGoodById
+      parameters:
+        - name: good_id
+          in: path
+          required: true
+          description: id goods
+          schema:
+            type: integer
+      responses:
+        '200':
+          description:  response with good
+          content:
+            application/json:
+             schema:
+                $ref: "#/components/schemas/full_good"
+        '404':
+          description: no this id
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: no id 3
+
+
+    put:
+      summary: Method to change good
+      tags:
+        - goods
+      operationId: putGood
+      parameters:
+        - name: good_id
+          in: path
+          required: true
+          description: id goods
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/full_good_no_id"
+      responses:
+        '200':
+          description: good changed
+          content:
+            application/json:
+             schema:
+                $ref: "#/components/schemas/response_ok"
+        '400':
+          description: no json
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: no json
+        '404':
+          description: no this id
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: no id 3
+
+
+
+    delete:
+      summary: Method to delete good
+      tags:
+        - goods
+      operationId: deleteGood
+      parameters:
+        - name: good_id
+          in: path
+          required: true
+          description: id goods
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: good changed
+          content:
+            application/json:
+             schema:
+                $ref: "#/components/schemas/response_ok"
+        '404':
+          description: no this id
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: no id 3
+
+
+
+
+
+
+
+components:
+  schemas:
+    short_good:
+      type: object
+      required:
+      - id
+      - name
+      properties:
+        id:
+          type: integer
+          example: 3
+        name:
+          type: string
+          example: apple
+    full_good:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 4
+        name:
+          type: string
+          example: orange
+        price:
+          type: integer
+          example: 100
+        manufacture_date:
+          type: string
+          example: 05/08/2022
+        picture_url:
+          type: string
+          example: googlepic.com/pic_orange.jpg
+    full_good_no_id:
+      type: object
+      properties:
+        name:
+          type: string
+          example: orange
+        price:
+          type: integer
+          example: 100
+        manufacture_date:
+          type: string
+          example: 05/08/2022
+        picture_url:
+          type: string
+          example: googlepic.com/pic_orange.jpg
+
+    response_ok:
+      type: object
+      required:
+      - id
+      properties:
+       id:
+          type: integer
+          example: 3
+          description: id new good
