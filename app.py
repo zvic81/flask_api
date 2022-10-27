@@ -1,8 +1,8 @@
 '''
 Simple RestAPI server with APIFlask, postgresql (psycopg2)
-run module, open http://localhost:5000 for Swagger UI 
+run module, open http://localhost:5000 for Swagger UI
 or use Postman
-for saving swagger openAPI schema to file use command in terminal. 
+for saving swagger openAPI schema to file use command in terminal.
 pwd must be the same as where app.py
 flask spec --output openapi.json
 '''
@@ -16,7 +16,7 @@ import os
 # from flask.views import MethodView
 
 
-from config import host, user, password, db_name  # config for database postgres
+from config import host, user, password, db_name, port  # config for database postgres
 # db.py - functions for bd access - select_all_db(connection),select_id_db(connection,id)
 # insert_db(connection,good_list),update_id_db(connection,id,good_list),delete_id_db(connection,id),close_db(connection)
 import db
@@ -62,7 +62,8 @@ connection = psycopg2.connect(
     host=host,
     user=user,
     password=password,
-    database=db_name
+    database=db_name,
+    port = port
 )
 connection.autocommit = True
 
