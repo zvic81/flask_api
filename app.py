@@ -8,6 +8,10 @@ flask spec --output openapi.json
 '''
 
 # from flask import Flask, jsonify, request, redirect  # , render_template
+import db
+# config for database postgres
+from config import host, user, password, db_name, port
+from config import host, user, password, db_name, port
 from flask import redirect
 from apiflask import APIFlask, Schema, abort
 from apiflask.fields import Integer, String, Field
@@ -16,15 +20,9 @@ import os
 # from flask.views import MethodView
 
 
-<<<<<<< HEAD
 # config for database postgres
-from config import host, user, password, db_name, port
-=======
-from config import host, user, password, db_name, port  # config for database postgres
->>>>>>> 06cf88f03d6e621b8b522d3eb7dfd929a707f06e
 # db.py - functions for bd access - select_all_db(connection),select_id_db(connection,id)
 # insert_db(connection,good_list),update_id_db(connection,id,good_list),delete_id_db(connection,id),close_db(connection)
-import db
 
 
 class BaseResponse(Schema):
@@ -68,11 +66,7 @@ connection = psycopg2.connect(
     user=user,
     password=password,
     database=db_name,
-<<<<<<< HEAD
     port=port
-=======
-    port = port
->>>>>>> 06cf88f03d6e621b8b522d3eb7dfd929a707f06e
 )
 connection.autocommit = True
 

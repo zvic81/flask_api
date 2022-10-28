@@ -1,1 +1,4 @@
 monopoly access to db (when open my app cannot write with other GUI)
+no access to directory volume BD
+different docker run -p 321:322 and Expose 322
+NO api interface!!!
