@@ -4,3 +4,4 @@ host = "localhost"
 user = "flask_user"
 password = "flask_user"
 db_name = "flask_db"
+port = 5433
