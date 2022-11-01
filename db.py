@@ -10,7 +10,7 @@ def connect_db(connection, host, user, password, db_name):
 
 
 # select * records from db and return dictionary
-def select_all_db(connection):
+def select_all_db(connection: any) -> list:
     with connection.cursor() as g:
         g.execute("SELECT id, name FROM goods ORDER BY id;")
         cnt = g.fetchall()
@@ -26,7 +26,7 @@ def select_all_db(connection):
 # select id records from db and return dictionary
 
 
-def select_id_db(connection, id):
+def select_id_db(connection: any, id: int) -> list:
     with connection.cursor() as g:
         g.execute("SELECT * FROM goods WHERE id=%s;", (id,))
         cnt = g.fetchall()
@@ -45,7 +45,7 @@ def select_id_db(connection, id):
 # insert new good into db
 
 
-def insert_db(connection, good_list):
+def insert_db(connection: any, good_list: list) -> tuple:
     with connection.cursor() as g:
         g.execute("""
                     INSERT INTO goods (name,price,manufacture_date,picture_url)
@@ -57,7 +57,7 @@ def insert_db(connection, good_list):
 # update goods where id
 
 
-def update_id_db(connection, id, good_list):
+def update_id_db(connection: any, id: int, good_list: list) -> int:
     with connection.cursor() as g:
         g.execute("SELECT COUNT(id) FROM goods WHERE id=%s", (id,))
         cnt = g.fetchone()
@@ -71,14 +71,14 @@ def update_id_db(connection, id, good_list):
 # delete good=id
 
 
-def delete_id_db(connection, id):
+def delete_id_db(connection: any, id: int) -> str:
     with connection.cursor() as g:
         g.execute("""
                     DELETE FROM goods WHERE id=%s;""", (id,))
     return g.statusmessage
 
 
-def close_db(connection):
+def close_db(connection: any) -> None:
     if connection:
         connection.close()
         print("<connection closed>")

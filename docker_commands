@@ -24,17 +24,16 @@ docker images
 docker rmi
 docker rmi 568913d706ed 301e00152ff4
 docker images
-docker run -p5000:5000 --net=host flask_api
-docker run --name pst -p 5432:5432 -e POSTGRES_USER=zvic -e POSTGRES_PASSWORD=mysecretpassword -d post
--e PGDATA=/var/lib/postgresql/data/pgdata -v /postdb:/var/lib/postgresql/data
-docker run --name pst -p 5433:5432 -e POSTGRES_USER=zvic -e POSTGRES_PASSWORD=mysecretpassword -e PGDATA=/var/lib/postgresql/data/pgdata -v /postdb:/var/lib/postgresql/data -d post
 
 docker run \
   --name pst \
   -e POSTGRES_PASSWORD=test1234 \
   -e POSTGRES_USER=zvic \
   -d \
-  -v ${PWD}/postdb:/var/lib/postgresql/data \
+  -v ${PWD}/dbpost:/var/lib/postgresql/data:z \
   -p 5433:5432 postgr
+
+docker run -p5000:5000 --net=host -d flask_api
+
   sudo chown -R $USER postdb
 

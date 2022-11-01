@@ -11,7 +11,6 @@ docker run \
   -e POSTGRES_PASSWORD=test1234 \
   -e POSTGRES_USER=zvic \
   -d \
-  -v ${PWD}/dbpost:/var/lib/postgresql/data:z \
   -p 5433:5432 postgr
 
 docker run -p5000:5000 --net=host -d flask_api
