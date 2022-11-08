@@ -1,5 +1,5 @@
 FROM postgres:13
-ADD ./flask_db.sql /docker-entrypoint-initdb.d/
+COPY ./flask_db.sql /docker-entrypoint-initdb.d/
 ENTRYPOINT ["docker-entrypoint.sh"]
-EXPOSE 5433
-CMD ["postgres"]
+#EXPOSE 5433
+#CMD ["postgres"]
