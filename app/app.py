@@ -7,22 +7,15 @@ pwd must be the same as where app.py
 flask spec --output openapi.json
 '''
 
-# from flask import Flask, jsonify, request, redirect  # , render_template
-import db
-# config for database postgres
-from config import host, user, password, db_name, port
-from config import host, user, password, db_name, port
 from flask import redirect
 from apiflask import APIFlask, Schema, abort
 from apiflask.fields import Integer, String, Field
 import psycopg2
 import os
-# from flask.views import MethodView
-
-
-# config for database postgres
 # db.py - functions for bd access - select_all_db(connection),select_id_db(connection,id)
-# insert_db(connection,good_list),update_id_db(connection,id,good_list),delete_id_db(connection,id),close_db(connection)
+import db
+# config for database postgres
+from config import host, user, password, db_name, port
 
 
 class BaseResponse(Schema):
