@@ -9,7 +9,7 @@ flask spec --output openapi.json
 import os
 from flask import redirect
 from apiflask import APIFlask, Schema, abort
-from apiflask.fields import Integer, String, Field
+from apiflask.fields import Integer, String, Field, Date
 import psycopg2
 # db.py - functions for bd access - select_all_db(connection),select_id_db(connection,id)
 # insert_db(connection,good_list),update_id_db(connection,id,good_list),delete_id_db(connection,id),close_db(connection)
@@ -38,6 +38,16 @@ class GoodIn(Schema):  # one good with full fields
 
 class GoodOut(GoodIn):  # one good with full fields
     id = Integer()
+
+
+class OrdersOut(Schema):    # list of orders for responce
+    id = Integer()
+    order_date = Date()
+    customer_name = String()
+    customer_email = String()
+    delivery_address = String()
+    status = String()
+    notes = String()
 
 
 class MessageOk(Schema):
@@ -78,7 +88,17 @@ def get_goods():
     goods = db.select_all_db(connection)
     return {
         'data': goods,
-        # 'message': 'Success',
+        'code': 200,
+    }
+
+
+@app.get('/orders')
+@app.output(OrdersOut(many=True))
+def get_orders():
+    orders = db.select_all_orders_db(connection)
+    print(orders)
+    return {
+        'data': orders,
         'code': 200,
     }
 
@@ -91,7 +111,7 @@ def get_good_id(good_id):
         abort(404, 'Error:no id')
     return {
         'data': good[0],
-        'code': 200
+        'code': 200,
     }
 
 

@@ -63,7 +63,7 @@ GRANT ALL ON SCHEMA public TO flask_user;
 INSERT INTO public.goods VALUES (1,'monitor', 112, '05/07/22', 'pic112');
 INSERT INTO public.goods VALUES (2,'wifi router', 12, '05/07/22', 'pic1');
 INSERT INTO public.goods VALUES (3,'keyboard', 2.5, '05/07/22', 'pickkeybord');
-INSERT INTO public.goods VALUES (4,'iphones', 199, '2/2/11', 'ya.com');
+INSERT INTO public.goods VALUES (4,'iphone', 199, '2/2/11', 'ya.com');
 INSERT INTO public.goods VALUES (5,'power supply', 1, '2/2/11', 'fig.com');
 INSERT INTO public.goods VALUES (6,'mouse', 1000.8, '2/2/11', 'mses.com');
 
@@ -75,9 +75,9 @@ INSERT INTO public.orders (id, order_date, customer_name, customer_email, delive
 
 INSERT INTO public.order_item (id, ammount, notes, order_id, good_id)
     VALUES (1, 4, 'keyboard', 1, 3), 
-           (2, 1, 'linux', 1, 2),
-           (3, 29, 'ananas', 3, 5),
-           (4, 12, 'aples', 3, 4);
+           (2, 1, 'wifi', 1, 2),
+           (3, 29, 'power', 3, 5),
+           (4, 12, 'iphone', 3, 4);
        
 SELECT pg_catalog.setval('public.goods_id_seq', 11, true);
 

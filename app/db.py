@@ -9,7 +9,7 @@ def connect_db(connection, host, user, password, db_name):
     connection.autocommit = True
 
 
-# select * records from db and return dictionary
+# select * records from db and return list
 def select_all_db(connection: any) -> list:
     with connection.cursor() as g:
         g.execute("SELECT id, name FROM goods ORDER BY id;")
@@ -23,9 +23,30 @@ def select_all_db(connection: any) -> list:
             goods.append(good)
         return goods
 
-# select id records from db and return dictionary
+#  select all orders from db, return list of dictionaries
 
 
+def select_all_orders_db(connection: any) -> list:
+    with connection.cursor() as g:
+        g.execute(
+            "SELECT id, order_date, customer_name, customer_email, delivery_address, status, notes FROM orders ORDER BY id;")
+        cnt = g.fetchall()
+        orders = []
+        for row in cnt:
+            order = {
+                'id': row[0],
+                'order_date': row[1],
+                'customer_name': row[2],
+                'customer_email': row[3],
+                'delivery_address': row[4],
+                'status': row[5],
+                'notes': row[6],
+            }
+            orders.append(order)
+        return orders
+
+
+# select id records from db and return list
 def select_id_db(connection: any, id: int) -> list:
     with connection.cursor() as g:
         g.execute("SELECT * FROM goods WHERE id=%s;", (id,))
