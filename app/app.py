@@ -7,6 +7,7 @@ pwd must be the same as where app.py
 flask spec --output openapi.json
 '''
 import os
+from time import sleep
 from flask import redirect
 from apiflask import APIFlask, Schema, abort
 from apiflask.fields import Integer, String, Field, Date
@@ -64,14 +65,6 @@ app.config['BASE_RESPONSE_SCHEMA'] = BaseResponse
 app.config['BASE_RESPONSE_DATA_KEY '] = 'data'
 
 
-connection = psycopg2.connect(
-    host=host,
-    user=user,
-    password=password,
-    database=db_name,
-    port=port
-)
-connection.autocommit = True
 
 
 @app.get('/')
@@ -168,4 +161,20 @@ def delete_good_id(good_id):
 
 
 if __name__ == "__main__":
+    while True:
+        try:
+            connection = psycopg2.connect(
+            host=host,
+            user=user,
+            password=password,
+            database=db_name,
+            port=port
+            )
+        except psycopg2.OperationalError:
+            print('Error: No BD server ready, try one more')
+            sleep(0.1) # wait 1sec to try connect
+            continue
+        break
+    connection.autocommit = True
+
     app.run(debug=True, host='0.0.0.0')
