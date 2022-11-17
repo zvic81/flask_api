@@ -9,74 +9,16 @@ flask spec --output openapi.json
 import os
 from time import sleep
 from flask import redirect
-from apiflask import APIFlask, Schema, abort
-from apiflask.fields import Integer, String, Field, Date, List, Nested
-import psycopg2
+from apiflask import APIFlask, abort
 # db.py - functions for bd access - select_all_db(connection),select_id_db(connection,id)
-# insert_db(connection,good_list),update_id_db(connection,id,good_list),delete_id_db(connection,id),close_db(connection)
 import db
-# config for database postgres
-from config import host, user, password, db_name, port
-
-
-class BaseResponse(Schema):
-    data = Field()  # the data key
-    # message = String()
-    code = Integer()
-
-
-class GoodsOut(Schema):  # list of short goods for response
-    id = Integer(metadata={'example': 2})
-    name = String(metadata={'example': 'Coffee'})
-
-
-class GoodIn(Schema):  # one good with full fields
-    name = String(required=True, metadata={'example': 'Coffee'})
-    price = Integer(metadata={'example': 21})
-    manufacture_date = String(metadata={'example': '02/08/2019'})
-    picture_url = String(metadata={'example': 'pic.com/mypic.jpg'})
-
-
-class GoodOut(GoodIn):  # one good with full fields
-    id = Integer()
-
-
-class OrdersOut(Schema):    # list of orders for responce
-    id = Integer()
-    order_date = Date()
-    customer_name = String()
-    customer_email = String()
-    delivery_address = String()
-    status = String()
-    notes = String()
-
-    class Meta:
-        ordered = True
-
-
-class OrderGood(Schema):
-    good_id = Integer()
-    ammount = Integer()
-
-
-class OrderIn(Schema):
-    order_date = Date()
-    customer_name = String()
-    customer_email = String()
-    delivery_address = String()
-    notes = String()
-    good_item = List(Nested(OrderGood()))
-
-
-class MessageOk(Schema):
-    id = Integer()
+import schemas
 
 
 app = APIFlask(__name__)
 app.url_map.strict_slashes = False  # open /goods/ as /goods
 app.config['DESCRIPTION'] = 'RestAPI server with Apiflask and postgresql'
-
-app.config['BASE_RESPONSE_SCHEMA'] = BaseResponse
+app.config['BASE_RESPONSE_SCHEMA'] = schemas.BaseResponse
 # the data key should match the data field name in the base response schema
 # defaults to "data"
 app.config['BASE_RESPONSE_DATA_KEY '] = 'data'
@@ -91,9 +33,9 @@ def index():
 
 
 @app.get('/goods')
-@app.output(GoodsOut(many=True))
+@app.output(schemas.GoodsOut(many=True))
 def get_goods():
-    goods = db.select_all_goods_db(connection)
+    goods = db.select_all_goods_db()
     return {
         'data': goods,
         'code': 200,
@@ -101,9 +43,9 @@ def get_goods():
 
 
 @app.get('/orders')
-@app.output(OrdersOut(many=True))
+@app.output(schemas.OrdersOut(many=True))
 def get_orders():
-    orders = db.select_all_orders_db(connection)
+    orders = db.select_all_orders_db()
     return {
         'data': orders,
         'code': 200,
@@ -111,9 +53,9 @@ def get_orders():
 
 
 @app.get('/goods/<int:good_id>')
-@app.output(GoodOut)
+@app.output(schemas.GoodOut)
 def get_good_id(good_id):
-    good = db.select_id_good_db(connection, good_id)
+    good = db.select_id_good_db(good_id)
     if len(good) == 0:
         abort(404, 'Error:no id')
     return {
@@ -123,8 +65,8 @@ def get_good_id(good_id):
 
 
 @app.post('/goods')
-@app.input(GoodIn)
-@app.output(MessageOk, status_code=201)
+@app.input(schemas.GoodIn)
+@app.output(schemas.MessageOk, status_code=201)
 def create_good(data):
     if not data:
         return abort(400, 'Error:no json')
@@ -134,39 +76,33 @@ def create_good(data):
         data['manufacture_date'],
         data['picture_url']
     ]
-    res = {'id': db.insert_good_db(connection, good)[0]}
+    res = {'id': db.insert_good_db(data)}
     return {
         'data': res,
         'code': 201,
     }
 
 
-@app.post('/orders')
-@app.input(OrderIn)
-@app.output(MessageOk, status_code=201)
+@ app.post('/orders')
+@ app.input(schemas.OrderIn)
+@ app.output(schemas.MessageOk, status_code=201)
 def create_order(data):
     if not data:
         return abort(400, 'Error:no json')
-    res = {'id': db.insert_order_db(connection, data)}
+    res = {'id': db.insert_order_db(data)}
     return {
         'data': res,
         'code': 201,
     }
 
 
-@app.put('/goods/<int:good_id>')
-@app.input(GoodIn)
-@app.output(MessageOk, status_code=201)
+@ app.put('/goods/<int:good_id>')
+@ app.input(schemas.GoodIn)
+@ app.output(schemas.MessageOk, status_code=201)
 def put_good_id(good_id, data):
     if not data:
         return abort(400, 'Error:no json')
-    good = [
-        data['name'],
-        data['price'],
-        data['manufacture_date'],
-        data['picture_url']
-    ]
-    res = {'id': db.update_id_good_db(connection, good_id, good)}
+    res = {'id': db.update_id_good_db(good_id, data)}
     if not res:
         return abort(404, 'Error:no id')
     return {
@@ -175,10 +111,10 @@ def put_good_id(good_id, data):
     }
 
 
-@app.delete('/goods/<int:good_id>')
-@app.output(MessageOk, status_code=204)
+@ app.delete('/goods/<int:good_id>')
+@ app.output(schemas.MessageOk, status_code=204)
 def delete_good_id(good_id):
-    res = db.delete_id_good_db(connection, good_id)
+    res = db.delete_id_good_db(good_id)
     if res[-1] == '0':
         return abort(404, 'Error:no id')
     return {
@@ -188,20 +124,5 @@ def delete_good_id(good_id):
 
 
 if __name__ == "__main__":
-    while True:
-        try:
-            connection = psycopg2.connect(
-                host=host,
-                user=user,
-                password=password,
-                database=db_name,
-                port=port
-            )
-        except psycopg2.OperationalError:
-            print('Error: No BD server ready, try one more')
-            sleep(0.1)  # wait 1sec to try connect
-            continue
-        break
-    connection.autocommit = True
-
-    app.run(debug=0, host='0.0.0.0')
+    # while True:
+    app.run(debug=1, host='0.0.0.0')
