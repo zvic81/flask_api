@@ -10,7 +10,7 @@ def connect_db(connection, host, user, password, db_name):
 
 
 # select * records from db and return list
-def select_all_db(connection: any) -> list:
+def select_all_goods_db(connection: any) -> list:
     with connection.cursor() as g:
         g.execute("SELECT id, name FROM goods ORDER BY id;")
         cnt = g.fetchall()
@@ -47,7 +47,7 @@ def select_all_orders_db(connection: any) -> list:
 
 
 # select id records from db and return list
-def select_id_db(connection: any, id: int) -> list:
+def select_id_good_db(connection: any, id: int) -> list:
     with connection.cursor() as g:
         g.execute("SELECT * FROM goods WHERE id=%s;", (id,))
         cnt = g.fetchall()
@@ -66,7 +66,7 @@ def select_id_db(connection: any, id: int) -> list:
 # insert new good into db
 
 
-def insert_db(connection: any, good_list: list) -> tuple:
+def insert_good_db(connection: any, good_list: list) -> tuple:
     with connection.cursor() as g:
         g.execute("""
                     INSERT INTO goods (name,price,manufacture_date,picture_url)
@@ -75,10 +75,27 @@ def insert_db(connection: any, good_list: list) -> tuple:
         cnt = g.fetchone()
     return cnt
 
+
+def insert_order_db(connection: any, order_list: dict) -> int:
+    with connection.cursor() as g:
+        g.execute("""
+                INSERT INTO orders (order_date, customer_name, customer_email, delivery_address, status, notes)
+                VALUES (%s,%s,%s,%s,%s,%s);""", (order_list.get('order_date'), order_list.get('customer_name'), order_list.get('customer_email'), order_list.get('delivery_address'),
+                                                 'new_ord', order_list.get('notes')))
+        g.execute("SELECT id FROM orders ORDER BY id DESC LIMIT 1;")
+        cnt = g.fetchone()
+        goods = order_list.get('good_item')
+        for item in goods:
+            g.execute("""
+                     INSERT INTO order_item (ammount, notes, order_id, good_id)
+                     VALUES (%s,%s,%s,%s);""", (item.get('ammount'), 'notes null', cnt[0], item.get('good_id')))
+
+    return cnt[0]  # return id new order
+
 # update goods where id
 
 
-def update_id_db(connection: any, id: int, good_list: list) -> int:
+def update_id_good_db(connection: any, id: int, good_list: list) -> int:
     with connection.cursor() as g:
         g.execute("SELECT COUNT(id) FROM goods WHERE id=%s", (id,))
         cnt = g.fetchone()
@@ -92,7 +109,7 @@ def update_id_db(connection: any, id: int, good_list: list) -> int:
 # delete good=id
 
 
-def delete_id_db(connection: any, id: int) -> str:
+def delete_id_good_db(connection: any, id: int) -> str:
     with connection.cursor() as g:
         g.execute("""
                     DELETE FROM goods WHERE id=%s;""", (id,))

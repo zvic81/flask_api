@@ -5,7 +5,7 @@ CREATE DATABASE flask_db WITH OWNER = flask_user ENCODING = 'UTF-8';
 \connect flask_db
 
 CREATE TABLE public.goods (
-    id serial PRIMARY KEY,
+    id serial PRIMARY KEY,--public.goods_id_seq
     name character varying(40) NOT NULL,
     price real,
     manufacture_date date,
@@ -13,7 +13,7 @@ CREATE TABLE public.goods (
 );
 
 CREATE TABLE public.orders (
-    id serial PRIMARY KEY,
+    id serial PRIMARY KEY, --public.orders_id_seq
     order_date date,
     customer_name character varying(40) NOT NULL,
     customer_email character varying(40),
@@ -23,7 +23,7 @@ CREATE TABLE public.orders (
 );
 
 CREATE TABLE public.order_item(
-    id serial PRIMARY KEY,
+    id serial PRIMARY KEY,  --public.order_item_id_seq
     ammount integer NOT NULL,
     notes character varying(40)
 );
@@ -39,7 +39,9 @@ ALTER TABLE public.order_item
     ADD CONSTRAINT fk_goodid
     FOREIGN KEY (good_id)
     REFERENCES public.goods(id);
-
+ALTER SEQUENCE public.orders_id_seq RESTART WITH 10;
+ALTER SEQUENCE public.goods_id_seq RESTART WITH 10;
+ALTER SEQUENCE public.order_item_id_seq RESTART WITH 10;
 
 ALTER TABLE public.goods OWNER TO flask_user;
 ALTER TABLE public.orders OWNER TO flask_user;

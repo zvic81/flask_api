@@ -10,7 +10,7 @@ import os
 from time import sleep
 from flask import redirect
 from apiflask import APIFlask, Schema, abort
-from apiflask.fields import Integer, String, Field, Date
+from apiflask.fields import Integer, String, Field, Date, List, Nested
 import psycopg2
 # db.py - functions for bd access - select_all_db(connection),select_id_db(connection,id)
 # insert_db(connection,good_list),update_id_db(connection,id,good_list),delete_id_db(connection,id),close_db(connection)
@@ -50,6 +50,23 @@ class OrdersOut(Schema):    # list of orders for responce
     status = String()
     notes = String()
 
+    class Meta:
+        ordered = True
+
+
+class OrderGood(Schema):
+    good_id = Integer()
+    ammount = Integer()
+
+
+class OrderIn(Schema):
+    order_date = Date()
+    customer_name = String()
+    customer_email = String()
+    delivery_address = String()
+    notes = String()
+    good_item = List(Nested(OrderGood()))
+
 
 class MessageOk(Schema):
     id = Integer()
@@ -65,8 +82,6 @@ app.config['BASE_RESPONSE_SCHEMA'] = BaseResponse
 app.config['BASE_RESPONSE_DATA_KEY '] = 'data'
 
 
-
-
 @app.get('/')
 @app.doc(hide=True)
 def index():
@@ -78,7 +93,7 @@ def index():
 @app.get('/goods')
 @app.output(GoodsOut(many=True))
 def get_goods():
-    goods = db.select_all_db(connection)
+    goods = db.select_all_goods_db(connection)
     return {
         'data': goods,
         'code': 200,
@@ -89,7 +104,6 @@ def get_goods():
 @app.output(OrdersOut(many=True))
 def get_orders():
     orders = db.select_all_orders_db(connection)
-    print(orders)
     return {
         'data': orders,
         'code': 200,
@@ -99,7 +113,7 @@ def get_orders():
 @app.get('/goods/<int:good_id>')
 @app.output(GoodOut)
 def get_good_id(good_id):
-    good = db.select_id_db(connection, good_id)
+    good = db.select_id_good_db(connection, good_id)
     if len(good) == 0:
         abort(404, 'Error:no id')
     return {
@@ -120,7 +134,20 @@ def create_good(data):
         data['manufacture_date'],
         data['picture_url']
     ]
-    res = {'id': db.insert_db(connection, good)[0]}
+    res = {'id': db.insert_good_db(connection, good)[0]}
+    return {
+        'data': res,
+        'code': 201,
+    }
+
+
+@app.post('/orders')
+@app.input(OrderIn)
+@app.output(MessageOk, status_code=201)
+def create_order(data):
+    if not data:
+        return abort(400, 'Error:no json')
+    res = {'id': db.insert_order_db(connection, data)}
     return {
         'data': res,
         'code': 201,
@@ -139,7 +166,7 @@ def put_good_id(good_id, data):
         data['manufacture_date'],
         data['picture_url']
     ]
-    res = {'id': db.update_id_db(connection, good_id, good)}
+    res = {'id': db.update_id_good_db(connection, good_id, good)}
     if not res:
         return abort(404, 'Error:no id')
     return {
@@ -151,7 +178,7 @@ def put_good_id(good_id, data):
 @app.delete('/goods/<int:good_id>')
 @app.output(MessageOk, status_code=204)
 def delete_good_id(good_id):
-    res = db.delete_id_db(connection, good_id)
+    res = db.delete_id_good_db(connection, good_id)
     if res[-1] == '0':
         return abort(404, 'Error:no id')
     return {
@@ -164,17 +191,17 @@ if __name__ == "__main__":
     while True:
         try:
             connection = psycopg2.connect(
-            host=host,
-            user=user,
-            password=password,
-            database=db_name,
-            port=port
+                host=host,
+                user=user,
+                password=password,
+                database=db_name,
+                port=port
             )
         except psycopg2.OperationalError:
             print('Error: No BD server ready, try one more')
-            sleep(0.1) # wait 1sec to try connect
+            sleep(0.1)  # wait 1sec to try connect
             continue
         break
     connection.autocommit = True
 
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=0, host='0.0.0.0')
