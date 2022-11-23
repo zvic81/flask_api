@@ -1,5 +1,5 @@
 on:
-  push
+  push:
     branches:
       - orders
 name: Create Pull Request
