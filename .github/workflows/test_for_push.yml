@@ -65,6 +65,7 @@ jobs:
           autopep8_dir: app/
   test:
     name: testik
+    runs-on: ubuntu-latest
     needs: run-linters
     steps:
       - name: Print
