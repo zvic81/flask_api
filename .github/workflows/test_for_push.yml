@@ -63,6 +63,9 @@ jobs:
         with:
           autopep8: true
           autopep8_dir: app/
-
-      - name: test
-        run: echo "out step prev  ${{ steps.step-one.outcome }}"
+  test:
+    name: testik
+    needs: run-linters
+    steps:
+      - name: Print
+        run:  echo "result of linter ${{ needs.run-linters.result }}"
