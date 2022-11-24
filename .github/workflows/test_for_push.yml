@@ -62,3 +62,9 @@ jobs:
         with:
           autopep8: true
           autopep8_dir: app/
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    needs: run-linters
+    steps:
+      - run: echo ${{needs.run-linters.outputs.output1}} ${{needs.run-linters.outputs.output2}}
