@@ -4,23 +4,31 @@ on:
       - orders
 name: Create Pull Request
 jobs:
-  createPullRequest:
+  updateAuthors:
     runs-on: ubuntu-latest
     steps:
-      # - uses: actions/checkout@v3
-      # - name: Create report file
-      #   id: reports
-      #   run: |
-      #     echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-      #     echo "##[set-output name=commits;]::$(git log --oneline)"
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Update AUTHORS
+        run: |
+          git log --format='%aN <%aE>%n%cN <%cE>' | sort -u > AUTHORS
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v3
+        uses: peter-evans/create-pull-request@v4
         with:
           commit-message: update authors
           title: Update AUTHORS
           body: Credit new contributors by updating AUTHORS
           branch: orders
           base: master
+
+
+      # - uses: actions/checkout@v3
+      # - name: Create report file
+      #   id: reports
+      #   run: |
+      #     echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      #     echo "##[set-output name=commits;]::$(git log --oneline)"
 
 
 
