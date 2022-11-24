@@ -58,13 +58,10 @@ jobs:
         run: ls ${{ github.workspace }}/app
 
       - name: Run linters
+        id: step-one
         uses: wearerequired/lint-action@v2
         with:
           autopep8: true
           autopep8_dir: app/
-  test:
-    name: test
-    runs-on: ubuntu-latest
-    needs: run-linters
-    steps:
-      - run: echo ${{needs.run-linters.outputs.output1}} ${{needs.run-linters.outputs.output2}}
+      - name: test
+        run: echo "outcome step one: ${{ steps.step-one.outcome }}"
