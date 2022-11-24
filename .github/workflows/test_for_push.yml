@@ -10,7 +10,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Create report file
         id: reports
-        run:  git log --oneline >> $GITHUB_OUTPUT
+        run: echo "$(git log --oneline)." >> $GITHUB_OUTPUT
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
