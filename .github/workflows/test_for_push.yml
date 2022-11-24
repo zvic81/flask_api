@@ -63,5 +63,6 @@ jobs:
         with:
           autopep8: true
           autopep8_dir: app/
+
       - name: test
-        run: echo "outcome step one: ${{ steps.step-one.outcome }}"
+        run: echo "out step prev  ${{ steps.step-one.outcome }}"
