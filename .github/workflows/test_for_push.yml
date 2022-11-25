@@ -8,14 +8,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
       - name: Make changes to pull request
         run: date +%s > report.txt
 
       - name: make variables
         id: make_var
-        run: |
-          branch-name="/${{ github.head_ref }}"
-          echo "branch-name=$branch-name" >> $GITHUB_OUTPUT
+        run: echo "branch-name=${{ github.head_ref }}" >> $GITHUB_OUTPUT
 
       - name: Create Pull Request
         id: cpr
