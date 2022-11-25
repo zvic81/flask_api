@@ -4,14 +4,30 @@ on:
     branches:
       - orders
 jobs:
+
   createPullRequest:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Make changes to pull request
-        run: date +%s > report.txt
+
+      - name: Setup python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+      - name: Install depends
+        run: pip install autopep8
+
+      - name: Show files
+        run: ls ${{ github.workspace }}/app
+
+      - name: Run linters
+        id: run_linters
+        uses: wearerequired/lint-action@v2
+        with:
+          autopep8: true
+          autopep8_dir: app/
 
       - name: make variables
         id: make_var
@@ -20,8 +36,7 @@ jobs:
           echo branch=$branch >> $GITHUB_OUTPUT
           commits=$(git log --oneline)
           echo commits=$commits >> $GITHUB_OUTPUT
-          git log --oneline
-
+          echo "result of linter ${{ steps.run_linters.outcome }}"
 
       # - name: Create Pull Request
       #   id: cpr
