@@ -15,7 +15,15 @@ jobs:
 
       - name: make variables
         id: make_var
-        run: echo "branch-name=${{ github.head_ref }}" >> $GITHUB_OUTPUT
+        run: |
+          MESSAGE=$(cat << EOF
+          first line
+          second line
+          third line
+          ...
+          EOF
+          )
+          echo TEST=$MESSAGE >> $GITHUB_OUTPUT
 
       - name: Create Pull Request
         id: cpr
@@ -30,7 +38,7 @@ jobs:
           title: '[Example] Update report'
           body: |
             Update report
-            - ${{ steps.make_var.outputs.branch-name }}
+            - ${{ steps.make_var.outputs.TEST }}
 
             [1]: https://github.com/peter-evans/create-pull-request
           labels: |
