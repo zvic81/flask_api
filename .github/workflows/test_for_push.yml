@@ -16,14 +16,8 @@ jobs:
       - name: make variables
         id: make_var
         run: |
-          MESSAGE=$(cat << EOF
-          first line
-          second line
-          third line
-          ...
-          EOF
-          )
-          echo TEST=${{ github.head_ref }} >> $GITHUB_OUTPUT
+          MESSAGE=$(git branch --show-current)
+          echo TEST=$MESSAGE >> $GITHUB_OUTPUT
 
       - name: Create Pull Request
         id: cpr
