@@ -48,7 +48,7 @@ jobs:
           signoff: false
           branch: orders
           base: master
-          title: '[Example] Update ${{ steps.make_var.outputs.branch }}'
+          title: 'Update orders'
           body: |
             Pull request for branch ${{ steps.make_var.outputs.branch }}
             Result of linter Pep8 : ${{ steps.run_linterss.outcome }}"
