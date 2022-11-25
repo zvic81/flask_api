@@ -23,7 +23,7 @@ jobs:
           ...
           EOF
           )
-          echo TEST=$MESSAGE >> $GITHUB_OUTPUT
+          echo TEST=${{ github.head_ref }} >> $GITHUB_OUTPUT
 
       - name: Create Pull Request
         id: cpr
