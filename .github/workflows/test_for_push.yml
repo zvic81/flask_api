@@ -20,6 +20,7 @@ jobs:
           author: ${{ github.actor }} <${{ github.actor }}@zvic81.github.com>
           signoff: false
           branch: orders
+          base: master
           title: '[Example] Update report'
           body: |
             Update report
