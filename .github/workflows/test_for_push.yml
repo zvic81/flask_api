@@ -44,26 +44,26 @@ jobs:
           branch=$(git branch --show-current)
           echo branch=$branch >> $GITHUB_OUTPUT
           commits=$(git log --oneline)
-          job_name=commits
+          job_name=$commits
           # echo "commits=$commits" >> $GITHUB_ENV
           # echo "random-id=$(echo $RANDOM)" >> $GITHUB_OUTPUT
           echo "result of linter ${{ steps.run_linters.outcome }}"
           echo "Commit is: $job_name"
-      - name: create string
-        run: |
-          MY_STRING=$(cat << EOF
-          first line
-          second line
-          third line
-          EOF
-          )
-          echo "MY_STRING<<EOF" >> $GITHUB_ENV
-          echo "$MY_STRING" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-        id: my_string
-      - name: display string
-        run: |
-          echo "The string is: ${{ env.MY_STRING }}"
+      # - name: create string
+      #   run: |
+      #     MY_STRING=$(cat << EOF
+      #     first line
+      #     second line
+      #     third line
+      #     EOF
+      #     )
+      #     echo "MY_STRING<<EOF" >> $GITHUB_ENV
+      #     echo "$MY_STRING" >> $GITHUB_ENV
+      #     echo "EOF" >> $GITHUB_ENV
+      #   id: my_string
+      # - name: display string
+      #   run: |
+      #     echo "The string is: ${{ env.MY_STRING }}"
 
 
       # - name: Create Pull Request
