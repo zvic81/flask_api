@@ -7,6 +7,9 @@ jobs:
 
   createPullRequest:
     runs-on: ubuntu-latest
+    env:
+      job_name: single job
+
     steps:
       - uses: actions/checkout@v3
         with:
@@ -41,9 +44,11 @@ jobs:
           branch=$(git branch --show-current)
           echo branch=$branch >> $GITHUB_OUTPUT
           commits=$(git log --oneline)
+          job_name=commits
           # echo "commits=$commits" >> $GITHUB_ENV
           # echo "random-id=$(echo $RANDOM)" >> $GITHUB_OUTPUT
           echo "result of linter ${{ steps.run_linters.outcome }}"
+          echo "Commit is: $job_name"
       - name: create string
         run: |
           MY_STRING=$(cat << EOF
