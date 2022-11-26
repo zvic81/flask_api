@@ -41,7 +41,7 @@ jobs:
           branch=$(git branch --show-current)
           echo branch=$branch >> $GITHUB_OUTPUT
           commits=$(git log --oneline)
-          commits-"${commits//$'\n'/\\n}"
+          # commits-"${commits//$'\n'/\\n}"
 
           #  output="${output//$'\n'/\\n}"
           echo commits=$commits >> $GITHUB_OUTPUT
