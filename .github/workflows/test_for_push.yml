@@ -41,7 +41,7 @@ jobs:
           branch=$(git branch --show-current)
           echo branch=$branch >> $GITHUB_OUTPUT
           commits=$(git log --oneline)
-          echo "commits=$commits" >> $GITHUB_OUTPUT
+          echo commits=$commits >> $GITHUB_OUTPUT
           echo "result of linter ${{ steps.run_linters.outcome }}"
           # echo "mix-test=$(mix test)\n" >> $GITHUB_OUTPUT
 
@@ -68,4 +68,4 @@ jobs:
             report
             automated pr
           assignees: zvic81
-          reviewers: css-ilgol
+          reviewers: zvic81
