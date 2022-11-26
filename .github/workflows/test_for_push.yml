@@ -40,10 +40,9 @@ jobs:
         run: |
           branch=$(git branch --show-current)
           echo branch=$branch >> $GITHUB_OUTPUT
-          commits=$(git log --oneline)
-          echo commits=join($commits, ' \n') >> $GITHUB_OUTPUT
+          commits=join($(git log --oneline), '\n')
+          echo commits=$commits >> $GITHUB_OUTPUT
           echo "result of linter ${{ steps.run_linters.outcome }}"
-          # echo join($commits, ' \n')
 
 
       - name: Create Pull Request
