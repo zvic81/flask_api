@@ -45,7 +45,7 @@ jobs:
           echo "result of linter ${{ steps.run_linters.outcome }}"
           # echo "mix-test=$(mix test)\n" >> $GITHUB_OUTPUT
           echo "random_number=$(($RANDOM % 2))" >> $GITHUB_OUTPUT
-          echo "com=$((git log --oneline))" >> $GITHUB_OUTPUT
+          echo "com=$(($commits))" >> $GITHUB_OUTPUT
 
 
       - name: Create Pull Request
