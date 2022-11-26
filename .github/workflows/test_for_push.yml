@@ -40,8 +40,10 @@ jobs:
         run: |
           branch=$(git branch --show-current)
           echo branch=$branch >> $GITHUB_OUTPUT
-          commits=${{ join($(git log --oneline), '\n')}}
-          # ${{join(steps.run_tests.outputs.*, '\n')}}
+          commits=$(git log --oneline)
+          commits-"${commits//$'\n'/\\n}"
+
+          #  output="${output//$'\n'/\\n}"
           echo commits=$commits >> $GITHUB_OUTPUT
           echo "result of linter ${{ steps.run_linters.outcome }}"
 
