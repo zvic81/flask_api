@@ -40,7 +40,7 @@ jobs:
         run: |
           branch=$(git branch --show-current)
           echo branch=$branch >> $GITHUB_OUTPUT
-          commits=join($(git log --oneline), '\n')
+          commits=$(git log --oneline)
           echo commits=$commits >> $GITHUB_OUTPUT
           echo "result of linter ${{ steps.run_linters.outcome }}"
 
