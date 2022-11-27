@@ -13,9 +13,9 @@ jobs:
         with:
            fetch-depth: 0
 
-        # if delete this not create PR!!!!! WHY?????????
-      - name: Make changes to pull request
-        run: date +%s > report.txt
+      #   # if delete this not create PR!!!!! WHY?????????
+      # - name: Make changes to pull request
+      #   run: date +%s > report.txt
 
         #  make linting
       - name: Setup python
