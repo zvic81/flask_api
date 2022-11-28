@@ -25,13 +25,13 @@ jobs:
 
           # echo "$PR_DESCRIPTION"
 
-      # - name: pull_request_action
-      #   uses: vsoch/pull-request-action@master
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #     PULL_REQUEST_BRANCH: "master"
-      #     PULL_REQUEST_FROM_BRANCH: "orders"
-      #     PULL_REQUEST_BODY: "Test from zvic81 to PR ++ \n just second line"
-      #     PULL_REQUEST_TITLE: "testing new PR"
-      #     PULL_REQUEST_ASSIGNEES: "zvic81"
-      #     PULL_REQUEST_REVIEWERS: "zvic81"
+      - name: pull_request_action
+        uses: vsoch/pull-request-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PULL_REQUEST_BRANCH: "master"
+          PULL_REQUEST_FROM_BRANCH: "orders"
+          PULL_REQUEST_BODY: ${{ env.PR_DESCRIPTION }}
+          PULL_REQUEST_TITLE: "testing new PR"
+          PULL_REQUEST_ASSIGNEES: "zvic81"
+          PULL_REQUEST_REVIEWERS: "zvic81"
