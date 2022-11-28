@@ -1,0 +1,23 @@
+name: Pull Request for orders
+on:
+  push
+    branches:
+      - orders
+jobs:
+  pull_request_orders:
+    name: PullRequestAction
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+      - name: pull_request_action
+        uses: vsoch/pull-request-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH_PREFIX: "update/"
+          PULL_REQUEST_BRANCH: "master"
+          PULL_REQUEST_FROM_BRANCH: "orders"
+          PULL_REQUEST_BODY: "Test from zvic81 to PR"
+          PULL_REQUEST_TITLE: "testing new PR"
+          PULL_REQUEST_ASSIGNEES: "zvic81"
+          PULL_REQUEST_REVIEWERS: "zvic81"
