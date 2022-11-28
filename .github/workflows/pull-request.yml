@@ -12,8 +12,8 @@ jobs:
         uses: actions/checkout@v2
       - name: Make PR body
         id: make_pr_body
-        run:|
-          PR_DESCRIPTION=$(git log origin/${{inputs.pr_branch}}..origin/${GITHUB_REF_NAME} --no-merges --no-decorate)
+        run: |
+          PR_DESCRIPTION=$(git log origin/master..origin/orders)
           echo "$PR_DESCRIPTION"
 
       # - name: pull_request_action
