@@ -12,6 +12,23 @@ jobs:
         uses: actions/checkout@v3
         with:
            fetch-depth: 0
+
+      #  make linting
+      - name: Setup python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+      - name: Install depends
+        run: pip install autopep8
+
+      - name: Run linters
+        id: run_linters
+        uses: wearerequired/lint-action@v2
+        with:
+          autopep8: true
+          autopep8_dir: app/
+
       - name: Make PR body
         id: make_pr_body
         run: |
@@ -22,7 +39,7 @@ jobs:
           echo 'PR_DESCRIPTION<<EOF' >> $GITHUB_ENV
           echo "$PR_DESCRIPTION" >> $GITHUB_ENV
           echo 'EOF' >> $GITHUB_ENV
-          PR_DESCRIPTION='This is diff comments for branch [master] and ['${GITHUB_REF_NAME}$']\n'$PR_DESCRIPTION
+          PR_DESCRIPTION='Result of linter: ${{ steps.run_linters.outcome }}'$'\n''This is diff comments for branch [master] and ['${GITHUB_REF_NAME}$']\n'$PR_DESCRIPTION
           echo "$PR_DESCRIPTION"
 
       # - name: pull_request_action
