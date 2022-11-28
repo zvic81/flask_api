@@ -15,7 +15,7 @@ jobs:
       - name: Make PR body
         id: make_pr_body
         run: |
-          PR_DESCRIPTION=$(git log origin/master..origin/orders --no-merges --no-decorate)
+          PR_DESCRIPTION=$(git log origin/${{inputs.pr_branch}}..origin/${GITHUB_REF_NAME} --no-merges --no-decorate)
           # PR_DESCRIPTION="${PR_DESCRIPTION//'%'/'%25'}"
           # PR_DESCRIPTION="${PR_DESCRIPTION//$'\n'/'%0A'}"
           # PR_DESCRIPTION="${PR_DESCRIPTION//$'\r'/'%0D'}"
@@ -23,15 +23,15 @@ jobs:
           echo "$PR_DESCRIPTION" >> $GITHUB_ENV
           echo 'EOF' >> $GITHUB_ENV
 
-          # echo "$PR_DESCRIPTION"
+          echo "$PR_DESCRIPTION"
 
-      - name: pull_request_action
-        uses: vsoch/pull-request-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PULL_REQUEST_BRANCH: "master"
-          PULL_REQUEST_FROM_BRANCH: "orders"
-          PULL_REQUEST_BODY: ${{ env.PR_DESCRIPTION }}
-          PULL_REQUEST_TITLE: "testing new PR"
-          PULL_REQUEST_ASSIGNEES: "zvic81"
-          PULL_REQUEST_REVIEWERS: "zvic81"
+      # - name: pull_request_action
+      #   uses: vsoch/pull-request-action@master
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     PULL_REQUEST_BRANCH: "master"
+      #     PULL_REQUEST_FROM_BRANCH: "orders"
+      #     PULL_REQUEST_BODY: ${{ env.PR_DESCRIPTION }}
+      #     PULL_REQUEST_TITLE: "testing new PR"
+      #     PULL_REQUEST_ASSIGNEES: "zvic81"
+      #     PULL_REQUEST_REVIEWERS: "zvic81"
