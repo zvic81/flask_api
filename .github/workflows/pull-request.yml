@@ -16,7 +16,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PULL_REQUEST_BRANCH: "master"
           PULL_REQUEST_FROM_BRANCH: "orders"
-          PULL_REQUEST_BODY: "Test from zvic81 to PR \n just second line"
+          PULL_REQUEST_BODY: "Test from zvic81 to PR ++ \n just second line"
           PULL_REQUEST_TITLE: "testing new PR"
           PULL_REQUEST_ASSIGNEES: "zvic81"
           PULL_REQUEST_REVIEWERS: "zvic81"
