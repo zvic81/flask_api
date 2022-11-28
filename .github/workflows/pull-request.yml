@@ -16,10 +16,14 @@ jobs:
         id: make_pr_body
         run: |
           PR_DESCRIPTION=$(git log origin/master..origin/orders --no-merges --no-decorate)
-          PR_DESCRIPTION="${PR_DESCRIPTION//'%'/'%25'}"
-          PR_DESCRIPTION="${PR_DESCRIPTION//$'\n'/'%0A'}"
-          PR_DESCRIPTION="${PR_DESCRIPTION//$'\r'/'%0D'}"
-          echo "$PR_DESCRIPTION"
+          # PR_DESCRIPTION="${PR_DESCRIPTION//'%'/'%25'}"
+          # PR_DESCRIPTION="${PR_DESCRIPTION//$'\n'/'%0A'}"
+          # PR_DESCRIPTION="${PR_DESCRIPTION//$'\r'/'%0D'}"
+          echo 'PR_DESCRIPTION<<EOF' >> $GITHUB_ENV
+          echo "$PR_DESCRIPTION" >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+
+          # echo "$PR_DESCRIPTION"
 
       # - name: pull_request_action
       #   uses: vsoch/pull-request-action@master
