@@ -38,7 +38,6 @@ jobs:
           # PR_DESCRIPTION="${PR_DESCRIPTION//$'\r'/'%0D'}"
           TITLE='Result of linter: ${{ steps.run_linters.outcome }}'$'\n''This is diff comments for branch [master] and ['${GITHUB_REF_NAME}$']\n'
           PR_DESCRIPTION=$TITLE$PR_DESCRIPTION
-          echo "$PR_DESCRIPTION"
           echo 'PR_DESCRIPTION<<EOF' >> $GITHUB_ENV
           echo "$PR_DESCRIPTION" >> $GITHUB_ENV
           echo 'EOF' >> $GITHUB_ENV
@@ -53,4 +52,4 @@ jobs:
           PULL_REQUEST_BODY: ${{ env.PR_DESCRIPTION }}
           PULL_REQUEST_TITLE: "Create new pull request from [orders] to [master]"
           PULL_REQUEST_ASSIGNEES: "zvic81"
-          PULL_REQUEST_REVIEWERS: "zvic81"
+          PULL_REQUEST_REVIEWERS: "css-ilgol"
