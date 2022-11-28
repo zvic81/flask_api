@@ -22,7 +22,7 @@ jobs:
           echo 'PR_DESCRIPTION<<EOF' >> $GITHUB_ENV
           echo "$PR_DESCRIPTION" >> $GITHUB_ENV
           echo 'EOF' >> $GITHUB_ENV
-          PR_DESCRIPTION="This is diff comments for branch [master] and ${GITHUB_REF_NAME} "$PR_DESCRIPTION
+          PR_DESCRIPTION="This is diff comments for branch [master] and [${GITHUB_REF_NAME}] \n"$PR_DESCRIPTION
           echo "$PR_DESCRIPTION"
 
       # - name: pull_request_action
