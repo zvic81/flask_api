@@ -29,6 +29,10 @@ jobs:
           autopep8: true
           autopep8_dir: app/
 
+      - name: Set branch name
+        run: echo "PULL_REQUEST_TITLE=${GITHUB_REF_NAME}" >> $GITHUB_ENV
+
+
       - name: Make PR body
         id: make_pr_body
         run: |
