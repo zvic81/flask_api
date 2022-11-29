@@ -31,7 +31,7 @@ jobs:
 
       - name: Set branch name
         run: |
-          TITLE='Create new pull request from branch ${{ GITHUB_REF_NAME }} to [master]'
+          TITLE='Create new pull request from branch['${GITHUB_REF_NAME}$'] to [master]'
           echo "PULL_REQUEST_TITLE=$TITLE" >> $GITHUB_ENV
 
 
