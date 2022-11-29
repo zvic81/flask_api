@@ -30,7 +30,7 @@ jobs:
           autopep8_dir: app/
 
       - name: Set branch name
-        TITLE="Create new pull request from branch ${GITHUB_REF_NAME} to [master]"
+        TITLE='Create new pull request from branch ${{ GITHUB_REF_NAME }} to [master]'
         run: echo "PULL_REQUEST_TITLE=$TITLE" >> $GITHUB_ENV
 
 
