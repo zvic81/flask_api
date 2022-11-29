@@ -1,4 +1,4 @@
-name: Pull Request for orders
+name: Linting code and Pull Request to [master]
 on:
   push:
     branches-ignore:
@@ -37,7 +37,7 @@ jobs:
           # PR_DESCRIPTION="${PR_DESCRIPTION//'%'/'%25'}"
           # PR_DESCRIPTION="${PR_DESCRIPTION//$'\n'/'%0A'}"
           # PR_DESCRIPTION="${PR_DESCRIPTION//$'\r'/'%0D'}"
-          TITLE='Result of linter: ${{ steps.run_linters.outcome }}'$'\n''This is diff comments for branch [master] and ['${GITHUB_REF_NAME}$']\n'
+          TITLE='Result of linter PEP8: ${{ steps.run_linters.outcome }}'$'\n''This is diff comments for branch [master] and ['${GITHUB_REF_NAME}$']\n'
           PR_DESCRIPTION=$TITLE$PR_DESCRIPTION
           echo 'PR_DESCRIPTION<<EOF' >> $GITHUB_ENV
           echo "$PR_DESCRIPTION" >> $GITHUB_ENV
