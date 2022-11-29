@@ -1,8 +1,8 @@
 name: Pull Request for orders
 on:
   push:
-    branches:
-      - orders
+    branches-ignore:
+      - 'master'
 jobs:
   pull_request_orders:
     name: PullRequestAction
@@ -49,8 +49,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PULL_REQUEST_BRANCH: "master"
-          PULL_REQUEST_FROM_BRANCH: "orders"
+          # PULL_REQUEST_FROM_BRANCH: "orders"
           PULL_REQUEST_BODY: ${{ env.PR_DESCRIPTION }}
-          PULL_REQUEST_TITLE: "Create new pull request from [orders] to [master]"
+          PULL_REQUEST_TITLE: "Create new pull request from ${GITHUB_REF_NAME} to [master]"
           PULL_REQUEST_ASSIGNEES: "zvic81"
-          PULL_REQUEST_REVIEWERS: "css-ilgol"
+          PULL_REQUEST_REVIEWERS: "zvic81"
