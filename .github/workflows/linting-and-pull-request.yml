@@ -4,8 +4,8 @@ on:
     branches-ignore:
       - 'master'
 jobs:
-  pull_request_orders:
-    name: PullRequestAction
+  linting_pull_request:
+    name: LintingPullRequestAction
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
