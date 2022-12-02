@@ -1,0 +1,63 @@
+name: Linting code and Pull Request to [master]
+on:
+  push:
+    branches-ignore:
+      - 'master'
+jobs:
+  linting_pull_request:
+    name: LintingPullRequestAction
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+        with:
+           fetch-depth: 0
+
+      #  make linting
+      - name: Setup python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+      - name: Install depends
+        run: pip install autopep8
+
+      - name: Run linters
+        id: run_linters
+        uses: wearerequired/lint-action@v2
+        with:
+          autopep8: true
+          autopep8_dir: app/
+
+      - name: Set branch name
+        run: |
+          TITLE='Create new pull request from branch ['${GITHUB_REF_NAME}$'] to [master]'
+          echo "PULL_REQUEST_TITLE=$TITLE" >> $GITHUB_ENV
+
+
+      - name: Make PR body
+        id: make_pr_body
+        run: |
+          PR_DESCRIPTION=$(git diff origin/master..origin/${GITHUB_REF_NAME})
+          # PR_DESCRIPTION=$(git log origin/master..origin/${GITHUB_REF_NAME} --no-merges --no-decorate)
+          # PR_DESCRIPTION="${PR_DESCRIPTION//'%'/'%25'}"
+          # PR_DESCRIPTION="${PR_DESCRIPTION//$'\n'/'%0A'}"
+          # PR_DESCRIPTION="${PR_DESCRIPTION//$'\r'/'%0D'}"
+          TITLE='Result of linter PEP8: ${{ steps.run_linters.outcome }}'$'\n''This is diff comments for branch [master] and ['${GITHUB_REF_NAME}$']\n'
+          PR_DESCRIPTION=$TITLE$PR_DESCRIPTION
+          echo 'PR_DESCRIPTION<<EOF' >> $GITHUB_ENV
+          echo "$PR_DESCRIPTION" >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+
+
+      - name: pull_request_action
+        uses: vsoch/pull-request-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PULL_REQUEST_BRANCH: "master"
+          # PULL_REQUEST_FROM_BRANCH: "orders"
+          PULL_REQUEST_UPDATE: set
+          PULL_REQUEST_BODY: ${{ env.PR_DESCRIPTION }}
+          # PULL_REQUEST_TITLE: "Create new pull request from branch ${{ GITHUB_REF_NAME }} to [master]"
+          PULL_REQUEST_ASSIGNEES: "zvic81"
+          PULL_REQUEST_REVIEWERS: "css-ilgol"
