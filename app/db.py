@@ -1,6 +1,6 @@
 import psycopg2
 # config for database postgres
-from config import host, user, password, db_name, port
+from app.config import host, user, password, db_name, port
 
 
 def connect_db(host=host, user=user, password=password, db_name=db_name):
