@@ -3,5 +3,8 @@
     "python.linting.enabled": true,
     "python.autoComplete.extraPaths": [
         false
+    ],
+    "python.analysis.extraPaths": [
+        false
     ]
 }

@@ -1,8 +1,7 @@
 
-from apiflask import APIFlask, abort
 from flask import redirect
-from time import sleep
-import os
+# from time import sleep
+# import os
 import db
 import schemas
 
@@ -51,7 +50,7 @@ def configure_routes(app):
     def create_good(data):
         if not data:
             return abort(400, 'Error:no json')
-        good = [
+        good = [  # For what this var ?????????&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&????????????????????
             data['name'],
             data['price'],
             data['manufacture_date'],
