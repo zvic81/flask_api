@@ -56,20 +56,18 @@ def select_all_orders_db() -> list:
 
 
 # select id records from db and return list
-def select_id_good_db(id: int) -> list:
+def select_id_good_db(id: int) -> dict:
     connection = connect_db()
     with connection.cursor() as g:
-        g.execute("SELECT * FROM goods WHERE id=%s;", (id,))
-        cnt = g.fetchall()
-        goods = []
-        for row in cnt:
-            goods.append({
-                'id': row[0],
-                'name': row[1],
-                'price': row[2],
-                'manufacture_date': row[3],
-                'picture_url': row[4]
-            })
+        g.execute(
+            "SELECT id,name,price,manufacture_date,picture_url FROM goods WHERE id=%s;", (id,))
+        cnt = g.fetchone()
+        goods = {}
+        goods['id'] = cnt[0]
+        goods['name'] = cnt[1]
+        goods['price'] = cnt[2]
+        goods['manufacture_date'] = cnt[3]
+        goods['picture_url'] = cnt[4]
         close_db(connection)
         return goods
 
@@ -106,7 +104,7 @@ def insert_order_db(order_list: dict) -> int:
     return cnt[0]  # return id new order
 
 
-def update_id_good_db(id: int, good_list: list) -> int:
+def update_id_good_db(id: int, good_list: dict) -> int:
     connection = connect_db()
     with connection.cursor() as g:
         g.execute("SELECT COUNT(id) FROM goods WHERE id=%s", (id,))

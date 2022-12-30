@@ -18,6 +18,10 @@ import schemas
 def config_apllication():
     app = APIFlask(__name__)
     configure_routes(app)
+    app.url_map.strict_slashes = False  # open /goods/ as /goods
+    app.config['DESCRIPTION'] = 'RestAPI server with Apiflask and postgresql'
+    app.config['BASE_RESPONSE_SCHEMA'] = schemas.BaseResponse
+    app.config['BASE_RESPONSE_DATA_KEY '] = 'data'
     client = app.test_client()
     return client
 
@@ -36,17 +40,23 @@ def test_base_route(config_apllication):
 def test_get_route(config_apllication):
     url = '/goods'
     response = config_apllication.get(url)
+    # pprint(response.get_json())
     assert response.status_code == 200
 
 
 @pytest.mark.app
-def test_post_route_success(config_apllication):
+def test_post_delete_route_success(config_apllication):
     url = '/goods'
-    mock_request_data = {'name': 'funta', 'manufacture_date': '2019-02-05',
+    mock_request_data = {'name': 'funtass', 'manufacture_date': '2019-02-05',
                          'price': 21, 'picture_url': 'pic.com/mypic.jpg', }
     response = config_apllication.post(url, json=mock_request_data)
-    # pprint(response.get_data())
     assert response.status_code == 201, pprint(response.get_data())
+    assert isinstance(response.get_json(), dict)
+    id = response.get_json()['data']['id']
+    url = '/goods/' + str(id)
+    # pprint(url)
+    response = config_apllication.delete(url)
+    assert response.status_code == 204
 
 
 # test if server get failure for not correct json

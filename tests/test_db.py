@@ -14,7 +14,7 @@ from schemas_validation import short_goods_schema, full_good_schema, orders_sche
 @pytest.mark.db
 def test_select_all_goods_db():
     res = db.select_all_goods_db()
-    pprint(res)
+    # pprint(res)
     assert res
     assert type(res) == list
     assert schema(short_goods_schema) == res
@@ -39,6 +39,12 @@ def test_insert_select_delete_good_db():
     id_good = db.insert_good_db(good)
     assert id_good > 0  # test if items added to db
 
-    db.select_id_good_db(id_good)
+    res = db.select_id_good_db(id_good)
+    assert res
+    assert schema(full_good_schema) == res
 
-    pass
+    res = db.update_id_good_db(id_good, good)
+    assert res == 1, 'Error in update table good'
+    # pprint(f'id = {id_good}')
+    res = db.delete_id_good_db(id_good)
+    assert res == 'DELETE 1'

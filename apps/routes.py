@@ -40,7 +40,7 @@ def configure_routes(app):
         if len(good) == 0:
             abort(404, 'Error:no id')
         return {
-            'data': good[0],
+            'data': good,
             'code': 200,
         }
 
@@ -50,12 +50,6 @@ def configure_routes(app):
     def create_good(data):
         if not data:
             return abort(400, 'Error:no json')
-        good = [  # For what this var ?????????&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&????????????????????
-            data['name'],
-            data['price'],
-            data['manufacture_date'],
-            data['picture_url']
-        ]
         res = {'id': db.insert_good_db(data)}
         return {
             'data': res,

@@ -60,4 +60,4 @@ jobs:
           PULL_REQUEST_BODY: ${{ env.PR_DESCRIPTION }}
           # PULL_REQUEST_TITLE: "Create new pull request from branch ${{ GITHUB_REF_NAME }} to [master]"
           PULL_REQUEST_ASSIGNEES: "zvic81"
-          PULL_REQUEST_REVIEWERS: "css-ilgol"
+          PULL_REQUEST_REVIEWERS: "zvic81" #there must be css-ilgol
