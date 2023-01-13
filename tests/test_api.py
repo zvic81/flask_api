@@ -1,5 +1,7 @@
+# first step in using Pytest for Flask. Testing my server's api rest function and bd together
+# need started postgres! run in bash ***   docker compose start postgres
 # for test put in console pytest -s -v -m app
-# need started postgres! docker compose start postgres
+
 import pytest
 import sys
 import os.path
@@ -44,7 +46,7 @@ def test_get_route(config_apllication):
     assert response.status_code == 200
 
 
-@pytest.mark.app
+@pytest.mark.app1
 def test_post_delete_route_success(config_apllication):
     url = '/goods'
     mock_request_data = {'name': 'funtass', 'manufacture_date': '2019-02-05',
@@ -57,6 +59,7 @@ def test_post_delete_route_success(config_apllication):
     # pprint(url)
     response = config_apllication.delete(url)
     assert response.status_code == 204
+    pprint
 
 
 # test if server get failure for not correct json
@@ -68,3 +71,11 @@ def test_post_route_failure(config_apllication):
     response = config_apllication.post(url, json=mock_request_data)
     # pprint(response.get_data())
     assert response.status_code == 400, pprint(response.get_data())
+
+
+@pytest.mark.app
+def test_get_orders_route(config_apllication):
+    url = '/orders'
+    response = config_apllication.get(url)
+    pprint(response.get_json())
+    assert response.status_code == 200

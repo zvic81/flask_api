@@ -1,5 +1,5 @@
 
-from flask import redirect
+from flask import redirect, abort
 # from time import sleep
 # import os
 import db
@@ -16,7 +16,7 @@ def configure_routes(app):
         return redirect("http://localhost:5000/docs", code=302)
 
     @app.get('/goods')
-    @app.output(schemas.GoodsOut(many=True))
+    @app.output(schemas.GoodsOut(many=True), status_code=200)
     def get_goods():
         goods = db.select_all_goods_db()
         return {
@@ -25,7 +25,7 @@ def configure_routes(app):
         }
 
     @app.get('/orders')
-    @app.output(schemas.OrdersOut(many=True))
+    @app.output(schemas.OrdersOut(many=True), status_code=200)
     def get_orders():
         orders = db.select_all_orders_db()
         return {
@@ -34,7 +34,7 @@ def configure_routes(app):
         }
 
     @app.get('/goods/<int:good_id>')
-    @app.output(schemas.GoodOut)
+    @app.output(schemas.GoodOut, status_code=200)
     def get_good_id(good_id):
         good = db.select_id_good_db(good_id)
         if len(good) == 0:
@@ -79,16 +79,16 @@ def configure_routes(app):
             return abort(404, 'Error:no id')
         return {
             'data': res,
-            'code': 200,
+            'code': 201,
         }
 
     @ app.delete('/goods/<int:good_id>')
-    @ app.output(schemas.MessageOk, status_code=204)
+    @ app.output(schemas.MessageOk, status_code=204)  # if status 204 - no json
     def delete_good_id(good_id):
         res = db.delete_id_good_db(good_id)
         if res[-1] == '0':
             return abort(404, 'Error:no id')
         return {
-            'data': {'1': 1},
-            'code': 200,
+            'data': 1,  # dont work because  MessageOk(Schema) forbid
+            'code': 204,
         }

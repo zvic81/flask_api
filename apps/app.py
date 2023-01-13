@@ -12,14 +12,7 @@ flask spec --output openapi.json
 from apiflask import APIFlask, abort
 import schemas
 from routes import configure_routes
-# import sys
-# import os.path
-# app_dir = (os.path.abspath(os.path.join(
-#     os.path.dirname(__file__), '..')) + '/tests/')
-# sys.path.append(app_dir)
 
-# from pprint import pprint
-# pprint(sys.path)
 app = APIFlask(__name__)
 configure_routes(app)
 app.url_map.strict_slashes = False  # open /goods/ as /goods
@@ -31,6 +24,5 @@ app.config['BASE_RESPONSE_DATA_KEY '] = 'data'
 
 
 if __name__ == "__main__":
-    # while True:
     app.run(debug=0, host='0.0.0.0')
     pass

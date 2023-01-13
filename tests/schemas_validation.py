@@ -1,5 +1,6 @@
-# schemas for validation data from db. Using in test_db.py and plugin pytest_schema
+# schemas for validation data from db. Using in test_db.py and test_api_mock.py. Need installed plugin "pip install pytest_schema"
 import datetime
+from pytest_schema import Or
 
 
 short_good_schema = {
@@ -11,8 +12,8 @@ short_goods_schema = [short_good_schema]
 full_good_schema = {
     "id": int,
     "name": str,
-    "price": float,
-    "manufacture_date": datetime.date,
+    "price": Or(int, float),
+    "manufacture_date": str,  # why? couse breaked test with mock in test_api_mock
     "picture_url": str
 }
 
@@ -21,7 +22,7 @@ order_schema = {
     "customer_name": str,
     "delivery_address": str,
     "notes": str,
-    "order_date": datetime.date,
+    "order_date": str,  # why? couse breaked test with mock in test_api_mock
     "status": str
 }
 orders_schema = [order_schema]

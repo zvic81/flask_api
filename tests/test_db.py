@@ -1,4 +1,6 @@
-#  testing db functions. write in console pytest -s -v -m db
+#  testing only db functions. write in console pytest -s -v -m db
+# need started postgres! run in bash ***   docker compose start postgres
+
 import pytest
 from pytest_schema import schema
 import sys
