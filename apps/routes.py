@@ -1,7 +1,4 @@
-
 from flask import redirect, abort
-# from time import sleep
-# import os
 import db
 import schemas
 

@@ -6,9 +6,7 @@ from pytest_schema import schema
 import datetime
 import sys
 import os.path
-from pprint import pprint
 from apiflask import APIFlask
-# import json
 app_dir = (os.path.abspath(os.path.join(
     os.path.dirname(__file__), '..')) + '/apps/')
 sys.path.append(app_dir)
@@ -43,13 +41,12 @@ def test_base_route(config_apllication):
 @pytest.mark.app_mock
 def test_get_all_goods_route(config_apllication, mocker):
     mocker.patch('db.select_all_goods_db', return_value=[{
-                 'id': 13, 'name': "name14"}, {
+        'id': 13, 'name': "name14"}, {
         'id': 15, 'name': "name16"}])
     url = '/goods'
     response = config_apllication.get(url)
     assert response.status_code == 200
     p = response.get_json()
-    # pprint(p)
     assert p['code'] == 200
     assert p['data'] == schema(short_goods_schema)
     assert p['data'][0] == {'id': 13, 'name': "name14"}
@@ -87,7 +84,6 @@ def test_get_id_good_route(config_apllication, mocker):
     response = config_apllication.get(url)
     assert response.status_code == 200
     p = response.get_json()
-    # pprint(p)
     assert p['code'] == 200
     assert p['data'] == schema(full_good_schema)
     assert p['data'] == {'id': 13, 'name': "name14", 'price': 15,

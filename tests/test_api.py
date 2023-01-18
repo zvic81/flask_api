@@ -5,15 +5,12 @@
 import pytest
 import sys
 import os.path
-from pprint import pprint
 from apiflask import APIFlask
-import json
 app_dir = (os.path.abspath(os.path.join(
     os.path.dirname(__file__), '..')) + '/apps/')
 sys.path.append(app_dir)
 from routes import configure_routes
 import schemas
-# pprint(sys.path)
 
 
 @pytest.fixture
@@ -42,11 +39,10 @@ def test_base_route(config_apllication):
 def test_get_route(config_apllication):
     url = '/goods'
     response = config_apllication.get(url)
-    # pprint(response.get_json())
     assert response.status_code == 200
 
 
-@pytest.mark.app1
+@pytest.mark.app
 def test_post_delete_route_success(config_apllication):
     url = '/goods'
     mock_request_data = {'name': 'funtass', 'manufacture_date': '2019-02-05',
@@ -56,10 +52,8 @@ def test_post_delete_route_success(config_apllication):
     assert isinstance(response.get_json(), dict)
     id = response.get_json()['data']['id']
     url = '/goods/' + str(id)
-    # pprint(url)
     response = config_apllication.delete(url)
     assert response.status_code == 204
-    pprint
 
 
 # test if server get failure for not correct json
@@ -69,7 +63,6 @@ def test_post_route_failure(config_apllication):
     mock_request_data = {'names': 'funta', 'manufacture_date': '2019-02-05',
                          'price': 21, 'picture_url': 'pic.com/mypic.jpg', }
     response = config_apllication.post(url, json=mock_request_data)
-    # pprint(response.get_data())
     assert response.status_code == 400, pprint(response.get_data())
 
 
@@ -77,5 +70,4 @@ def test_post_route_failure(config_apllication):
 def test_get_orders_route(config_apllication):
     url = '/orders'
     response = config_apllication.get(url)
-    pprint(response.get_json())
     assert response.status_code == 200

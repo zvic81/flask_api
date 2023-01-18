@@ -13,7 +13,8 @@ full_good_schema = {
     "id": int,
     "name": str,
     "price": Or(int, float),
-    "manufacture_date": str,  # why? couse breaked test with mock in test_api_mock
+    # breaked test with mock in test_api_mock
+    "manufacture_date": Or(str, datetime.date),
     "picture_url": str
 }
 
@@ -22,7 +23,8 @@ order_schema = {
     "customer_name": str,
     "delivery_address": str,
     "notes": str,
-    "order_date": str,  # why? couse breaked test with mock in test_api_mock
+    # why? couse breaked test with mock in test_api_mock
+    "order_date": Or(str, datetime.date),
     "status": str
 }
 orders_schema = [order_schema]

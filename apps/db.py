@@ -1,5 +1,4 @@
 import psycopg2
-# config for database postgres
 from config import host, user, password, db_name, port
 
 
@@ -15,7 +14,6 @@ def connect_db(host=host, user=user, password=password, db_name=db_name):
     except psycopg2.OperationalError:
         print('Error: No BD server ready, try one more')
         return 0
-        # sleep(0.1)  # wait 1sec to try connect
     connection.autocommit = True
     return connection
 
@@ -55,7 +53,7 @@ def select_all_orders_db() -> list:
         return orders
 
 
-# select id records from db and return list
+# select id record from db and return dict
 def select_id_good_db(id: int) -> dict:
     connection = connect_db()
     with connection.cursor() as g:
@@ -71,9 +69,8 @@ def select_id_good_db(id: int) -> dict:
         close_db(connection)
         return goods
 
+
 # insert new good into db
-
-
 def insert_good_db(good_list: dict) -> list:
     connection = connect_db()
     with connection.cursor() as g:
@@ -91,8 +88,8 @@ def insert_order_db(order_list: dict) -> int:
     with connection.cursor() as g:
         g.execute("""
                 INSERT INTO orders (order_date, customer_name, customer_email, delivery_address, status, notes)
-                VALUES (%s,%s,%s,%s,%s,%s);""", (order_list.get('order_date'), order_list.get('customer_name'), order_list.get('customer_email'), order_list.get('delivery_address'),
-                                                 'new_ord', order_list.get('notes')))
+                VALUES (%s,%s,%s,%s,%s,%s);""", (order_list.get('order_date'), order_list.get('customer_name'), order_list.get('customer_email'),
+                                                 order_list.get('delivery_address'), 'new_ord', order_list.get('notes')))
         g.execute("SELECT id FROM orders ORDER BY id DESC LIMIT 1;")
         cnt = g.fetchone()
         goods = order_list.get('good_item')
@@ -122,8 +119,7 @@ def update_id_good_db(id: int, good_list: dict) -> int:
 def delete_id_good_db(id: int) -> str:
     connection = connect_db()
     with connection.cursor() as g:
-        g.execute("""
-                    DELETE FROM goods WHERE id=%s;""", (id,))
+        g.execute("""DELETE FROM goods WHERE id=%s;""", (id,))
     close_db(connection)
     return g.statusmessage
 
@@ -131,4 +127,3 @@ def delete_id_good_db(id: int) -> str:
 def close_db(connection: any) -> None:
     if connection:
         connection.close()
-        # print("<connection closed>")

@@ -6,10 +6,7 @@ for saving swagger openAPI schema to file use command in terminal.
 pwd must be the same as where app.py
 flask spec --output openapi.json
 '''
-# import os
-# from time import sleep
-# from flask import redirect
-from apiflask import APIFlask, abort
+from apiflask import APIFlask
 import schemas
 from routes import configure_routes
 

@@ -5,7 +5,6 @@ import pytest
 from pytest_schema import schema
 import sys
 import os.path
-from pprint import pprint
 app_dir = (os.path.abspath(os.path.join(
     os.path.dirname(__file__), '..')) + '/apps/')
 sys.path.append(app_dir)
@@ -16,7 +15,6 @@ from schemas_validation import short_goods_schema, full_good_schema, orders_sche
 @pytest.mark.db
 def test_select_all_goods_db():
     res = db.select_all_goods_db()
-    # pprint(res)
     assert res
     assert type(res) == list
     assert schema(short_goods_schema) == res
@@ -47,6 +45,5 @@ def test_insert_select_delete_good_db():
 
     res = db.update_id_good_db(id_good, good)
     assert res == 1, 'Error in update table good'
-    # pprint(f'id = {id_good}')
     res = db.delete_id_good_db(id_good)
     assert res == 'DELETE 1'
