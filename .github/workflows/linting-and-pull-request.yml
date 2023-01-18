@@ -38,15 +38,7 @@ jobs:
       - name: Make PR body
         id: make_pr_body
         run: |
-<<<<<<< HEAD
-          PR_DESCRIPTION=$(git diff origin/master..origin/${GITHUB_REF_NAME})
-=======
-          # PR_DESCRIPTION=$(git diff origin/master..origin/${GITHUB_REF_NAME})
           PR_DESCRIPTION=$(git log origin/master..origin/${GITHUB_REF_NAME} --no-merges --no-decorate)
-          # PR_DESCRIPTION="${PR_DESCRIPTION//'%'/'%25'}"
-          # PR_DESCRIPTION="${PR_DESCRIPTION//$'\n'/'%0A'}"
-          # PR_DESCRIPTION="${PR_DESCRIPTION//$'\r'/'%0D'}"
->>>>>>> 6c5c0fdd8abfd6b02a0c1b011c345cd243af2a0d
           TITLE='Result of linter PEP8: ${{ steps.run_linters.outcome }}'$'\n''This is diff comments for branch [master] and ['${GITHUB_REF_NAME}$']\n'
           PR_DESCRIPTION=$TITLE$PR_DESCRIPTION
           echo 'PR_DESCRIPTION<<EOF' >> $GITHUB_ENV
@@ -61,5 +53,5 @@ jobs:
           PULL_REQUEST_BRANCH: "master"
           PULL_REQUEST_UPDATE: set
           PULL_REQUEST_BODY: ${{ env.PR_DESCRIPTION }}
-          PULL_REQUEST_ASSIGNEES: "zvic81"
-          PULL_REQUEST_REVIEWERS: "css-ilgol zvic81" #there must be css-ilgol
+          PULL_REQUEST_ASSIGNEES: zvic81
+          PULL_REQUEST_REVIEWERS: css-ilgol zvic81 #there must be css-ilgol
