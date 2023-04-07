@@ -4,3 +4,8 @@ stuff
 dbpost
 .vscode
 .db
+*venv
+.pytest_cashe
+.vscode
+for api
+*.pem
