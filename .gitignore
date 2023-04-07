@@ -7,5 +7,4 @@ dbpost
 *venv
 .pytest_cashe
 .vscode
-for api
 *.pem
