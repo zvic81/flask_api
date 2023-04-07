@@ -13,6 +13,7 @@ Flask_api is a Python application for test api rest on flask and using postgresq
 - psycopg2-binary --not need if use compose
 - Flask  --not need if use compose
 - apiflask  --not need if use compose
+- pytest (and plugins pytest-schema,pytest-mock)
 - installed docker compose in Linux
 
 ## Installation

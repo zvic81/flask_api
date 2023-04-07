@@ -1,5 +1,4 @@
 from apiflask import Schema, fields
-# from apiflask.fields import Integer, String, Field, Date, List, Nested
 from apiflask.validators import Range
 
 
@@ -25,7 +24,7 @@ class GoodOut(GoodIn):  # one good with full fields
 
 
 class OrdersOut(Schema):    # list of orders for responce
-    id = fields.Integer()
+    id = fields.Integer(required=True)
     order_date = fields.Date()
     customer_name = fields.String()
     customer_email = fields.String()
