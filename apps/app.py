@@ -18,6 +18,8 @@ app.config['BASE_RESPONSE_SCHEMA'] = schemas.BaseResponse
 # the data key should match the data field name in the base response schema
 # defaults to "data"
 app.config['BASE_RESPONSE_DATA_KEY '] = 'data'
+app.config["JWT_SECRET_KEY"] = "mysecretkey"
+
 
 
 if __name__ == "__main__":

@@ -55,3 +55,7 @@ class OrderIn(Schema):
 
 class MessageOk(Schema):
     id = fields.Integer()
+
+class LoginIn(Schema):  # one good with full fields
+    username = fields.String(required=True, metadata={'example': 'vic'})
+    password = fields.String(metadata={'example': "mypass"})
