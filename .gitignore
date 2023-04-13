@@ -8,3 +8,4 @@ dbpost
 .pytest_cashe
 .vscode
 *.pem
+client_secret*.json

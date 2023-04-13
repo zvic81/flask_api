@@ -6,6 +6,7 @@ for saving swagger openAPI schema to file use command in terminal.
 pwd must be the same as where app.py
 flask spec --output openapi.json
 '''
+from datetime import timedelta
 from apiflask import APIFlask
 import schemas
 from routes import configure_routes
@@ -19,7 +20,9 @@ app.config['BASE_RESPONSE_SCHEMA'] = schemas.BaseResponse
 # defaults to "data"
 app.config['BASE_RESPONSE_DATA_KEY '] = 'data'
 app.config["JWT_SECRET_KEY"] = "mysecretkey"
-
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=5)
+app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=30)
+app.secret_key = 'BAD_SECRET_KEY'
 
 
 if __name__ == "__main__":

@@ -70,10 +70,11 @@ INSERT INTO public.goods VALUES (5,'power supply', 1, '2/2/11', 'fig.com');
 INSERT INTO public.goods VALUES (6,'mouse', 1000.8, '2/2/11', 'mses.com');
 
 INSERT INTO public.orders (id, order_date, customer_name, customer_email, delivery_address, status, notes) 
-    VALUES (1,'02/05/2019', 'Sekretov', 'secr@list.ru', 'Apatity', 'new', 'paid'), 
-           (2,'02/05/2019', 'Mihrin',  'mikhrin@list.ru', 'Kirovsk', 'transact', 'not paid'),
+    VALUES (1,'02/05/2019', 'Sekretov', 'zvic1981@gmail.com', 'Apatity', 'new', 'paid'), 
+           (2,'02/05/2019', 'Mihrin',  'zvic1981@gmail.com', 'Kirovsk', 'transact', 'not paid'),
            (3,'02/05/2019', 'zakharov', 'zakharov@list.ru', 'Apatity', 'paid', 'paid'),
-           (4,'02/05/2019', 'Zelenskiy', 'zelen@list.ru', 'Kiyev', 'closed', 'paid');
+           (4,'02/05/2019', 'Zelenskiy', 'zelensky@gmail.com', 'Kiyev', 'closed', 'paid'),
+           (3,'02/05/2019', 'Carlson', 'zvic1981@gmail.com', 'Stogholm', 'paid', 'paid');
 
 INSERT INTO public.order_item (id, ammount, notes, order_id, good_id)
     VALUES (1, 4, 'keyboard', 1, 3), 

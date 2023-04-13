@@ -32,11 +32,11 @@ def select_all_goods_db() -> list:
 
 
 # select all orders from db, return list of dictionaries
-def select_all_orders_db() -> list:
+def select_all_orders_db(user_email: str) -> list:
     connection = connect_db()
     with connection.cursor() as g:
         g.execute(
-            "SELECT id, order_date, customer_name, customer_email, delivery_address, status, notes FROM orders ORDER BY id;")
+            "SELECT id, order_date, customer_name, customer_email, delivery_address, status, notes FROM orders WHERE customer_email=%s ORDER BY id;", (user_email,))
         cnt = g.fetchall()
         orders = []
         for row in cnt:
