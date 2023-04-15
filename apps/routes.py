@@ -37,7 +37,6 @@ def configure_routes(app):
     def get_orders():
         current_user = get_jwt_identity()
         print(current_user)
-
         orders = db.select_all_orders_db(current_user)
         return {
             'data': orders,
@@ -103,12 +102,12 @@ def configure_routes(app):
             'data': 1,  # dont work because  MessageOk(Schema) forbid
             'code': 204,
         }
-    
+
     @app.get('/login')
     def login():
         authorization_url, state = oauth_functions.flow.authorization_url()
         return redirect(authorization_url,code=302)
-    
+
     @app.get("/callback")
     def callback():
         oauth_functions.flow.fetch_token(authorization_response=request.url)
@@ -137,6 +136,3 @@ def configure_routes(app):
         access_token = create_access_token(identity=identity)
         print('return new token in refresh')
         return jsonify(access_token=access_token)
- 
-    
-   
