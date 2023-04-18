@@ -14,7 +14,7 @@ services:
       - "5433:5432"
   api:
     container_name: flask-api
-    build: ./app
+    build: ./apps
     ports:
       - "5000:5000"
     network_mode: host
