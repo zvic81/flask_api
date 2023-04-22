@@ -5,3 +5,4 @@ pytest
 flask-jwt-extended
 google-auth-oauthlib
 pyopenssl
+redis

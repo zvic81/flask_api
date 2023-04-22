@@ -4,9 +4,13 @@ from pip._vendor import cachecontrol
 import google.auth.transport.requests
 from google.oauth2 import id_token
 from flask_jwt_extended import JWTManager,create_access_token, create_refresh_token,jwt_required,get_jwt_identity
+import redis
+import json
+import time
 import db
 import schemas
 import oauth_functions
+import redis_function
 
 
 
@@ -129,10 +133,40 @@ def configure_routes(app):
         return jsonify(access_token=access_token, refresh_token=refresh_token)
 
 
-    @app.get("/refresh")
+    @app.get("/refresh_token")
     @jwt_required(refresh=True)
     def refresh():
         identity = get_jwt_identity()
         access_token = create_access_token(identity=identity)
         print('return new token in refresh')
         return jsonify(access_token=access_token)
+
+
+    @app.get("/goods_cached")
+    @app.output(schemas.GoodsOutCached(many=True), status_code=200)
+    def get_goods_cached():
+        output_redis = None
+        try:
+            with redis.Redis() as r:
+                output_redis = r.get('goods')
+        except (redis.exceptions.ConnectionError, redis.exceptions.BusyLoadingError):
+            print("ERROR get_goods_cached(): redis not ready!")
+            redis_function.connect_redis()
+
+
+        if output_redis:
+            goods_cached = json.loads(output_redis)
+        else:
+            goods_cached = db.select_all_goods_db()
+            for item in goods_cached:
+                item['price'] = len(item['name']) + 0.99
+                time.sleep(0.9)
+            try:
+                with redis.Redis() as r:
+                    r.set('goods', json.dumps(goods_cached))
+            except (redis.exceptions.ConnectionError, redis.exceptions.BusyLoadingError):
+                print("ERROR get_goods_cached(): redis not ready!")
+        return {
+            'data': goods_cached,
+            'code': 200,
+        }

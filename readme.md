@@ -44,7 +44,7 @@ Endpoints:
 - delete /goods/<int:good_id> - delete good with id
 - get /login - enter login-email for protected access
 - get /callback - servise endpoint for reciving jwt token after authentication
-- get /refresh - get new token if current is expired, Need send refresh token
+- get /refresh_token - get new token if current is expired, Need send refresh token
 
 There is samples json requests in file flask_api.postman_collection
 

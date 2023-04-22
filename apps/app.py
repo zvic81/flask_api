@@ -10,6 +10,7 @@ from datetime import timedelta
 from apiflask import APIFlask
 import schemas
 from routes import configure_routes
+import redis_function
 
 app = APIFlask(__name__)
 configure_routes(app)
@@ -23,7 +24,7 @@ app.config["JWT_SECRET_KEY"] = "mysecretkey"
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=5)
 app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=30)
 app.secret_key = 'BAD_SECRET_KEY'
-
+redis_function.connect_redis()
 
 if __name__ == "__main__":
     app.run(debug=0, host='0.0.0.0')

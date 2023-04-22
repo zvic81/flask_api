@@ -1,0 +1,3 @@
+redis
+docker run -p 6379:6379 -d --network=host --name redis-py redis
+docker exec -it redis-py redis-cli

@@ -11,6 +11,9 @@ class GoodsOut(Schema):  # list of short goods for response
     id = fields.Integer(metadata={'example': 2})
     name = fields.String(metadata={'example': 'Coffee'})
 
+class GoodsOutCached(GoodsOut):
+    price = fields.Float(metadata={'example': 55.99})
+
 
 class GoodIn(Schema):  # one good with full fields
     name = fields.String(required=True, metadata={'example': 'Coffee'})
