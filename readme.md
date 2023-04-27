@@ -1,7 +1,7 @@
 # Flask_api
 Flask_api is a Python application for test API REST. It's the model of simple storehouse. API lets view, create and delete goods in DB and orders for buyers. Added simple authentication with google oAuth2 and JWT tokens.
 
-Technologies usedЖ
+Technologies used:
 - APIFlask
 - psycopg2
 - pytest
@@ -32,8 +32,11 @@ $  docker compose up -d
 - 3) Try open http://127.0.0.1:5000 for swagger gui app or use Postman
 
 ## Description
+
 For google oAuth there must be file client_secret_web.json in project root dir. URL for file https://console.cloud.google.com/apis/credentials?project=vzaharov
+
 Apps need started Redis docker within name "redis-py". It ran by docker-compose.yml but you can start redis manually docker run -p 6379:6379 -d --network=host --name redis-py redis
+
 Endpoints:
 
 - get /docs - main page for swagger documentation, some function may be ran there
