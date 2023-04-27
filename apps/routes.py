@@ -10,8 +10,6 @@ import time
 import db
 import schemas
 import oauth_functions
-import redis_function
-
 
 
 jwt = JWTManager()
@@ -65,6 +63,12 @@ def configure_routes(app):
         if not data:
             return abort(400, 'Error:no json')
         res = {'id': db.insert_good_db(data)}
+        try:
+            with redis.Redis() as r:
+                r.flushdb()
+        except (redis.exceptions.ConnectionError, redis.exceptions.BusyLoadingError):
+            print("ERROR get_goods_cached(): redis not ready!")
+
         return {
             'data': res,
             'code': 201,
@@ -91,6 +95,12 @@ def configure_routes(app):
         res = {'id': db.update_id_good_db(good_id, data)}
         if not res:
             return abort(404, 'Error:no id')
+        try:
+            with redis.Redis() as r:
+                r.flushdb()
+        except (redis.exceptions.ConnectionError, redis.exceptions.BusyLoadingError):
+            print("ERROR get_goods_cached(): redis not ready!")
+
         return {
             'data': res,
             'code': 201,
@@ -151,7 +161,6 @@ def configure_routes(app):
                 output_redis = r.get('goods')
         except (redis.exceptions.ConnectionError, redis.exceptions.BusyLoadingError):
             print("ERROR get_goods_cached(): redis not ready!")
-            redis_function.connect_redis()
 
 
         if output_redis:
