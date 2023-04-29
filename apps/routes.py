@@ -7,27 +7,30 @@ from flask_jwt_extended import JWTManager,create_access_token, create_refresh_to
 import redis
 import json
 import time
+import logging
+
 import db
 import schemas
 import oauth_functions
 
 
 jwt = JWTManager()
+logger = logging.getLogger('mongo')
 
 def configure_routes(app):
     jwt.init_app(app)
-
     @app.get('/')
     @app.doc(hide=True)
     def index():
         data = {'message': 'Hello!'}
-        # open swagger index page
+        logger.info("return index page")
         return redirect("/docs", code=302)
 
     @app.get('/goods')
     @app.output(schemas.GoodsOut(many=True), status_code=200)
     def get_goods():
         goods = db.select_all_goods_db()
+        logger.info("return get('/goods')")
         return {
             'data': goods,
             'code': 200,
@@ -40,6 +43,7 @@ def configure_routes(app):
         current_user = get_jwt_identity()
         print(current_user)
         orders = db.select_all_orders_db(current_user)
+        logger.info(f"return get('/orders') for user {current_user}")
         return {
             'data': orders,
             'code': 200,
@@ -50,7 +54,9 @@ def configure_routes(app):
     def get_good_id(good_id):
         good = db.select_id_good_db(good_id)
         if len(good) == 0:
+            logger.info(f"Error get goods for id={good_id}")
             abort(404, 'Error:no id')
+        logger.info(f"return get goods for id={good_id}")
         return {
             'data': good,
             'code': 200,
@@ -67,8 +73,8 @@ def configure_routes(app):
             with redis.Redis() as r:
                 r.flushdb()
         except (redis.exceptions.ConnectionError, redis.exceptions.BusyLoadingError):
-            print("ERROR get_goods_cached(): redis not ready!")
-
+            logger.info("ERROR get_goods_cached(): redis not ready!")
+        logger.info(f"post goods for {res}")
         return {
             'data': res,
             'code': 201,
@@ -81,6 +87,7 @@ def configure_routes(app):
         if not data:
             return abort(400, 'Error:no json')
         res = {'id': db.insert_order_db(data)}
+        logger.info(f"post orders for {res}")
         return {
             'data': res,
             'code': 201,
@@ -100,7 +107,7 @@ def configure_routes(app):
                 r.flushdb()
         except (redis.exceptions.ConnectionError, redis.exceptions.BusyLoadingError):
             print("ERROR get_goods_cached(): redis not ready!")
-
+        logger.info(f"put goods for {res}")
         return {
             'data': res,
             'code': 201,
@@ -112,8 +119,9 @@ def configure_routes(app):
         res = db.delete_id_good_db(good_id)
         if res[-1] == '0':
             return abort(404, 'Error:no id')
+        logger.info(f"delete goods for id={good_id}")
         return {
-            'data': 1,  # dont work because  MessageOk(Schema) forbid
+            'data': 1,
             'code': 204,
         }
 
@@ -140,6 +148,7 @@ def configure_routes(app):
         print(f'logged email = {email}')
         access_token = create_access_token(identity=email)
         refresh_token = create_refresh_token(identity=email)
+        logger.info(f"jwt token return succesfully for {email}")
         return jsonify(access_token=access_token, refresh_token=refresh_token)
 
 
@@ -148,7 +157,7 @@ def configure_routes(app):
     def refresh():
         identity = get_jwt_identity()
         access_token = create_access_token(identity=identity)
-        print('return new token in refresh')
+        logger.info(f'return new token in refresh for {identity}')
         return jsonify(access_token=access_token)
 
 
@@ -160,7 +169,7 @@ def configure_routes(app):
             with redis.Redis() as r:
                 output_redis = r.get('goods')
         except (redis.exceptions.ConnectionError, redis.exceptions.BusyLoadingError):
-            print("ERROR get_goods_cached(): redis not ready!")
+            logger.info("ERROR get_goods_cached(): redis not ready!")
 
 
         if output_redis:
@@ -174,7 +183,8 @@ def configure_routes(app):
                 with redis.Redis() as r:
                     r.set('goods', json.dumps(goods_cached))
             except (redis.exceptions.ConnectionError, redis.exceptions.BusyLoadingError):
-                print("ERROR get_goods_cached(): redis not ready!")
+                logger.info("ERROR get_goods_cached(): redis not ready!")
+        logger.info("return goods_cached ")
         return {
             'data': goods_cached,
             'code': 200,

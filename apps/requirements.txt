@@ -5,3 +5,4 @@ flask-jwt-extended
 google-auth-oauthlib
 pyopenssl
 redis
+log4mongo
