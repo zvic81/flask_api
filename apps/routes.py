@@ -12,10 +12,11 @@ import logging
 import db
 import schemas
 import oauth_functions
+import mongo_functions
 
 
 jwt = JWTManager()
-logger = logging.getLogger('mongo')
+logger = logging.getLogger('console')
 
 def configure_routes(app):
     jwt.init_app(app)
@@ -143,9 +144,7 @@ def configure_routes(app):
             request=token_request,
             audience=oauth_functions.GOOGLE_CLIENT_ID
         )
-        print(f' ******************id_info=   {id_info}')
         email = id_info.get("email")
-        print(f'logged email = {email}')
         access_token = create_access_token(identity=email)
         refresh_token = create_refresh_token(identity=email)
         logger.info(f"jwt token return succesfully for {email}")
@@ -187,5 +186,20 @@ def configure_routes(app):
         logger.info("return goods_cached ")
         return {
             'data': goods_cached,
+            'code': 200,
+        }
+
+    @app.get("/logs")
+    @app.input(schemas.LogsFilterIn, location = 'query')
+    @app.output(schemas.LogsOut(many=True), status_code=200)
+    def get_logs(query):
+        result = (mongo_functions.select_logs_from_mongo(query['timestart'],
+                                                      query['timeend'], query.get('module')))
+        if result == 1:
+            logger.info(f"Error get logs, server Mongo not ready")
+            abort(404, 'Error_Mongo_not_ready')
+        logger.info(f"return logs from Mongo")
+        return {
+            'data': result,
             'code': 200,
         }
