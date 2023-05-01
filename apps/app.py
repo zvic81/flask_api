@@ -32,12 +32,11 @@ app.secret_key = 'BAD_SECRET_KEY'
 
 
 if __name__ == "__main__":
-    logging.config.dictConfig(log_config.config)
-    # if not is_mongo_run():
-    #     logger = logging.getLogger('mongo')
-    #     logger.info("logger ready to write into MongoDB")
-    # else:
-    logger = logging.getLogger('console')
+    if not is_mongo_run():
+        logging.config.dictConfig(log_config.config_mongo)
+    else:
+        logging.config.dictConfig(log_config.config_console)
+    logger = logging.getLogger('my_log')
     logger.info("app started!!!")
     app.run(debug=0, host='0.0.0.0')
     pass

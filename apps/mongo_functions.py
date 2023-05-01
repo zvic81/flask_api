@@ -4,7 +4,7 @@ from datetime import datetime
 
 
 def is_mongo_run() -> int:
-    client = pymongo.MongoClient()
+    client = pymongo.MongoClient(serverSelectionTimeoutMS=3)
     try:
         client.admin.command('ismaster')
     except ConnectionFailure:

@@ -16,7 +16,7 @@ import mongo_functions
 
 
 jwt = JWTManager()
-logger = logging.getLogger('console')
+logger = logging.getLogger('my_log')
 
 def configure_routes(app):
     jwt.init_app(app)

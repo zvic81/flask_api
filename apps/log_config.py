@@ -1,6 +1,6 @@
-# config for logging, use handler 'mongo' for saving onto mongoDB
+# config for logging, use handler 'mongo' for saving into mongoDB
 
-config = {
+config_mongo = {
     'version': 1,
     'formatters': {
         'simple': {
@@ -32,9 +32,38 @@ config = {
             'handlers': ['console',],
             'level': 'DEBUG',
         },
-        'mongo': {
+        'my_log': {
             'handlers': ['mongo',],
             'level': 'DEBUG',
         }
+    }
+}
+
+
+config_console = {
+    'version': 1,
+    'formatters': {
+        'simple': {
+            'format': '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'level': 'DEBUG',
+            'formatter': 'simple'
+        },
+    },
+    'loggers':{
+        '': {
+            'handlers': [],
+            'level': 'DEBUG',
+            'propagate': False,
+
+        },
+        'my_log': {
+            'handlers': ['console',],
+            'level': 'DEBUG',
+        },
     }
 }
