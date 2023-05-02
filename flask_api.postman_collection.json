@@ -28,6 +28,64 @@
 			"response": []
 		},
 		{
+			"name": "get goods cached",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/goods_cached",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"goods_cached"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get logs",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:5000/logs?timestart=2023-04-30 18:00:00&timeend=2023-05-03 18:00:00&module=routes",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "5000",
+					"path": [
+						"logs"
+					],
+					"query": [
+						{
+							"key": "timestart",
+							"value": "2023-04-30 18:00:00"
+						},
+						{
+							"key": "timeend",
+							"value": "2023-05-03 18:00:00"
+						},
+						{
+							"key": "module",
+							"value": "routes"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "get id",
 			"request": {
 				"method": "GET",

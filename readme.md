@@ -1,5 +1,5 @@
 # Flask_api
-Flask_api is a Python application for test API REST. It's the model of simple storehouse. API lets view, create and delete goods in DB and orders for buyers. Added simple authentication with google oAuth2 and JWT tokens.
+Flask_api is a Python application for test API REST. It's the model of simple storehouse. API lets view, create and delete goods in DB and orders for buyers. Added simple authentication with google oAuth2 and JWT tokens. Added logging to MongoDB and send filtered logs
 
 Technologies used:
 - APIFlask
@@ -10,6 +10,7 @@ Technologies used:
 - Docker compose
 - Github Action
 - Redis cache
+- MongoDB
 
 
 ## Requirements
@@ -35,7 +36,8 @@ $  docker compose up -d
 
 For google oAuth there must be file client_secret_web.json in project root dir. URL for file https://console.cloud.google.com/apis/credentials?project=vzaharov
 
-Apps need started Redis docker within name "redis-py". It ran by docker-compose.yml but you can start redis manually docker run -p 6379:6379 -d --network=host --name redis-py redis
+App needs started Redis docker with name "redis-py". It ran by docker-compose.yml but you can start redis manually docker run -p 6379:6379 -d --network=host --name redis-py redis
+App needs started MongoDB docker. It ran by docker-compose.yml but you can start redis manually docker run -it -p 27017:27017 --name mongo-logs mongo:4.4.6. Version 4.4.6 recomended because ver 5.0 doesnt work on my office pc (error MongoDB 5.0+ requires a CPU with AVX support. Container failed to start)
 
 Endpoints:
 
@@ -51,8 +53,9 @@ Endpoints:
 - get /callback - servise endpoint for reciving jwt token after authentication
 - get /refresh_token - get new token if current is expired, Need send refresh token
 - get /goods_cached - get all orders with added calculated price. Calcaulating take 1 sec every item but using redis cache it runs immediatly
+- get /logs - get logs the app saved in mongoDB. Parameters in query are required: timestart|timeend|module(one of app-routes-all). Example "/logs?timestart=2023-04-30 18:00:00&timeend=2023-05-03 18:00:00&module=routes"
 
-There is samples json requests in file flask_api.postman_collection
+There is samples json requests in file flask_api.postman_collection for Postman
 
 There is file linting-and-pull-request in dir .github  - script for github action. It makes checking linting and auto pull request to branch main
 
