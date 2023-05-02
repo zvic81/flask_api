@@ -13,7 +13,7 @@ def connect_db(host=host, user=user, password=password, db_name=db_name):
         )
     except psycopg2.OperationalError:
         print('Error: No BD server ready, try one more')
-        return 0
+        return 1
     connection.autocommit = True
     return connection
 
@@ -21,6 +21,7 @@ def connect_db(host=host, user=user, password=password, db_name=db_name):
 # select * records from db and return list
 def select_all_goods_db() -> list:
     connection = connect_db()
+    if connection == 1: return ["ERROR_serverDB_not_ready"]
     with connection.cursor() as g:
         g.execute("SELECT id, name FROM goods ORDER BY id;")
         cnt = g.fetchall()
@@ -34,6 +35,7 @@ def select_all_goods_db() -> list:
 # select all orders from db, return list of dictionaries
 def select_all_orders_db(user_email: str) -> list:
     connection = connect_db()
+    if connection == 1: return  ["ERROR_serverDB_not_ready"]
     with connection.cursor() as g:
         g.execute(
             "SELECT id, order_date, customer_name, customer_email, delivery_address, status, notes FROM orders WHERE customer_email=%s ORDER BY id;", (user_email,))
@@ -56,6 +58,7 @@ def select_all_orders_db(user_email: str) -> list:
 # select id record from db and return dict
 def select_id_good_db(id: int) -> dict:
     connection = connect_db()
+    if connection == 1: return  ["ERROR_serverDB_not_ready"]
     with connection.cursor() as g:
         g.execute(
             "SELECT id,name,price,manufacture_date,picture_url FROM goods WHERE id=%s;", (id,))
@@ -73,6 +76,7 @@ def select_id_good_db(id: int) -> dict:
 # insert new good into db
 def insert_good_db(good_list: dict) -> list:
     connection = connect_db()
+    if connection == 1: return  ["ERROR_serverDB_not_ready"]
     with connection.cursor() as g:
         g.execute("""
                     INSERT INTO goods (name, price, manufacture_date, picture_url)
@@ -85,6 +89,7 @@ def insert_good_db(good_list: dict) -> list:
 
 def insert_order_db(order_list: dict) -> int:
     connection = connect_db()
+    if connection == 1: return  ["ERROR_serverDB_not_ready"]
     with connection.cursor() as g:
         g.execute("""
                 INSERT INTO orders (order_date, customer_name, customer_email, delivery_address, status, notes)
@@ -103,6 +108,7 @@ def insert_order_db(order_list: dict) -> int:
 
 def update_id_good_db(id: int, good_list: dict) -> int:
     connection = connect_db()
+    if connection == 1: return  ["ERROR_serverDB_not_ready"]
     with connection.cursor() as g:
         g.execute("SELECT COUNT(id) FROM goods WHERE id=%s", (id,))
         cnt = g.fetchone()
@@ -118,6 +124,7 @@ def update_id_good_db(id: int, good_list: dict) -> int:
 
 def delete_id_good_db(id: int) -> str:
     connection = connect_db()
+    if connection == 1: return  ["ERROR_serverDB_not_ready"]
     with connection.cursor() as g:
         g.execute("""DELETE FROM goods WHERE id=%s;""", (id,))
     close_db(connection)

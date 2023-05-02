@@ -36,10 +36,11 @@ $  docker compose up -d
 
 For google oAuth there must be file client_secret_web.json in project root dir. URL for file https://console.cloud.google.com/apis/credentials?project=vzaharov
 
-App needs started Redis docker with name "redis-py". It ran by docker-compose.yml but you can start redis manually docker run -p 6379:6379 -d --network=host --name redis-py redis
-App needs started MongoDB docker. It ran by docker-compose.yml but you can start redis manually docker run -it -p 27017:27017 --name mongo-logs mongo:4.4.6. Version 4.4.6 recomended because ver 5.0 doesnt work on my office pc (error MongoDB 5.0+ requires a CPU with AVX support. Container failed to start)
+App needs started Redis docker with name "redis-py". It ran by docker-compose.yml but you can start redis manually $docker run -p 6379:6379 -d --network=host --name redis-py redis.
 
-Endpoints:
+App needs started MongoDB docker. It ran by docker-compose.yml but you can start redis manually $docker run -it -p 27017:27017 --name mongo-logs mongo:4.4.6. Version 4.4.6 recomended because ver 5.0 doesnt work on my office pc (error MongoDB 5.0+ requires a CPU with AVX support. Container failed to start)
+
+## Endpoints:
 
 - get /docs - main page for swagger documentation, some function may be ran there
 - get /goods' - get all goods in short view
@@ -53,7 +54,7 @@ Endpoints:
 - get /callback - servise endpoint for reciving jwt token after authentication
 - get /refresh_token - get new token if current is expired, Need send refresh token
 - get /goods_cached - get all orders with added calculated price. Calcaulating take 1 sec every item but using redis cache it runs immediatly
-- get /logs - get logs the app saved in mongoDB. Parameters in query are required: timestart|timeend|module(one of app-routes-all). Example "/logs?timestart=2023-04-30 18:00:00&timeend=2023-05-03 18:00:00&module=routes"
+- get /logs - get the app's logs saved in mongoDB. Parameters in query are required: 'timestart' 'timeend' 'module'(one of app-routes-all). Example "/logs?timestart=2023-04-30 18:00:00&timeend=2023-05-03 18:00:00&module=routes"
 
 There is samples json requests in file flask_api.postman_collection for Postman
 

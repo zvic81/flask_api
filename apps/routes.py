@@ -1,4 +1,5 @@
-from flask import redirect, abort,jsonify, request
+from flask import redirect, jsonify, request
+from apiflask import abort
 import requests
 from pip._vendor import cachecontrol
 import google.auth.transport.requests
@@ -31,6 +32,7 @@ def configure_routes(app):
     @app.output(schemas.GoodsOut(many=True), status_code=200)
     def get_goods():
         goods = db.select_all_goods_db()
+        if goods == ["ERROR_serverDB_not_ready"]: abort(500, message='ERROR_serverDB_not_ready') 
         logger.info("return get('/goods')")
         return {
             'data': goods,
@@ -44,6 +46,7 @@ def configure_routes(app):
         current_user = get_jwt_identity()
         print(current_user)
         orders = db.select_all_orders_db(current_user)
+        if orders == ["ERROR_serverDB_not_ready"]: abort(500, message='ERROR_serverDB_not_ready') 
         logger.info(f"return get('/orders') for user {current_user}")
         return {
             'data': orders,
@@ -54,9 +57,10 @@ def configure_routes(app):
     @app.output(schemas.GoodOut, status_code=200)
     def get_good_id(good_id):
         good = db.select_id_good_db(good_id)
+        if good == ["ERROR_serverDB_not_ready"]: abort(500, message='ERROR_serverDB_not_ready') 
         if len(good) == 0:
             logger.info(f"Error get goods for id={good_id}")
-            abort(404, 'Error:no id')
+            abort(404, message='Error_no_id')
         logger.info(f"return get goods for id={good_id}")
         return {
             'data': good,
@@ -68,8 +72,9 @@ def configure_routes(app):
     @app.output(schemas.MessageOk, status_code=201)
     def create_good(data):
         if not data:
-            return abort(400, 'Error:no json')
+            return abort(400, message = 'Error_no_json')
         res = {'id': db.insert_good_db(data)}
+        if res['id'] == ["ERROR_serverDB_not_ready"]: abort(500, message='ERROR_serverDB_not_ready') 
         try:
             with redis.Redis() as r:
                 r.flushdb()
@@ -86,8 +91,9 @@ def configure_routes(app):
     @app.output(schemas.MessageOk, status_code=201)
     def create_order(data):
         if not data:
-            return abort(400, 'Error:no json')
+            return abort(400, message = 'Error_no_json')
         res = {'id': db.insert_order_db(data)}
+        if res['id'] == ["ERROR_serverDB_not_ready"]: abort(500, message='ERROR_serverDB_not_ready') 
         logger.info(f"post orders for {res}")
         return {
             'data': res,
@@ -99,8 +105,9 @@ def configure_routes(app):
     @app.output(schemas.MessageOk, status_code=201)
     def put_good_id(good_id, data):
         if not data:
-            return abort(400, 'Error:no json')
+            return abort(400, message = 'Error_no_json')
         res = {'id': db.update_id_good_db(good_id, data)}
+        if res['id'] == ["ERROR_serverDB_not_ready"]: abort(500, message='ERROR_serverDB_not_ready') 
         if not res:
             return abort(404, 'Error:no id')
         try:
@@ -118,8 +125,9 @@ def configure_routes(app):
     @app.output(schemas.MessageOk, status_code=204)  # if status 204 - no json
     def delete_good_id(good_id):
         res = db.delete_id_good_db(good_id)
+        if res == ["ERROR_serverDB_not_ready"]: abort(500, message='ERROR_serverDB_not_ready') 
         if res[-1] == '0':
-            return abort(404, 'Error:no id')
+            return abort(404, message='Error_no_id')
         logger.info(f"delete goods for id={good_id}")
         return {
             'data': 1,
