@@ -8,8 +8,13 @@ flask spec --output openapi.json
 '''
 from datetime import timedelta
 from apiflask import APIFlask
+import logging
+import logging.config
+from log4mongo.handlers import MongoHandler
 import schemas
 from routes import configure_routes
+import log_config
+from mongo_functions import is_mongo_run
 
 app = APIFlask(__name__)
 configure_routes(app)
@@ -25,6 +30,13 @@ app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=30)
 app.secret_key = 'BAD_SECRET_KEY'
 
 
+
 if __name__ == "__main__":
+    if not is_mongo_run():
+        logging.config.dictConfig(log_config.config_mongo)
+    else:
+        logging.config.dictConfig(log_config.config_console)
+    logger = logging.getLogger('my_log')
+    logger.info("app started!!!")
     app.run(debug=0, host='0.0.0.0')
     pass

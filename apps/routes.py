@@ -1,4 +1,5 @@
-from flask import redirect, abort,jsonify, request
+from flask import redirect, jsonify, request
+from apiflask import abort
 import requests
 from pip._vendor import cachecontrol
 import google.auth.transport.requests
@@ -7,27 +8,32 @@ from flask_jwt_extended import JWTManager,create_access_token, create_refresh_to
 import redis
 import json
 import time
+import logging
+
 import db
 import schemas
 import oauth_functions
+import mongo_functions
 
 
 jwt = JWTManager()
+logger = logging.getLogger('my_log')
 
 def configure_routes(app):
     jwt.init_app(app)
-
     @app.get('/')
     @app.doc(hide=True)
     def index():
         data = {'message': 'Hello!'}
-        # open swagger index page
+        logger.info("return index page")
         return redirect("/docs", code=302)
 
     @app.get('/goods')
     @app.output(schemas.GoodsOut(many=True), status_code=200)
     def get_goods():
         goods = db.select_all_goods_db()
+        if goods == ["ERROR_serverDB_not_ready"]: abort(500, message='ERROR_serverDB_not_ready') 
+        logger.info("return get('/goods')")
         return {
             'data': goods,
             'code': 200,
@@ -40,6 +46,8 @@ def configure_routes(app):
         current_user = get_jwt_identity()
         print(current_user)
         orders = db.select_all_orders_db(current_user)
+        if orders == ["ERROR_serverDB_not_ready"]: abort(500, message='ERROR_serverDB_not_ready') 
+        logger.info(f"return get('/orders') for user {current_user}")
         return {
             'data': orders,
             'code': 200,
@@ -49,8 +57,11 @@ def configure_routes(app):
     @app.output(schemas.GoodOut, status_code=200)
     def get_good_id(good_id):
         good = db.select_id_good_db(good_id)
+        if good == ["ERROR_serverDB_not_ready"]: abort(500, message='ERROR_serverDB_not_ready') 
         if len(good) == 0:
-            abort(404, 'Error:no id')
+            logger.info(f"Error get goods for id={good_id}")
+            abort(404, message='Error_no_id')
+        logger.info(f"return get goods for id={good_id}")
         return {
             'data': good,
             'code': 200,
@@ -61,14 +72,15 @@ def configure_routes(app):
     @app.output(schemas.MessageOk, status_code=201)
     def create_good(data):
         if not data:
-            return abort(400, 'Error:no json')
+            return abort(400, message = 'Error_no_json')
         res = {'id': db.insert_good_db(data)}
+        if res['id'] == ["ERROR_serverDB_not_ready"]: abort(500, message='ERROR_serverDB_not_ready') 
         try:
             with redis.Redis() as r:
                 r.flushdb()
         except (redis.exceptions.ConnectionError, redis.exceptions.BusyLoadingError):
-            print("ERROR get_goods_cached(): redis not ready!")
-
+            logger.info("ERROR get_goods_cached(): redis not ready!")
+        logger.info(f"post goods for {res}")
         return {
             'data': res,
             'code': 201,
@@ -79,8 +91,10 @@ def configure_routes(app):
     @app.output(schemas.MessageOk, status_code=201)
     def create_order(data):
         if not data:
-            return abort(400, 'Error:no json')
+            return abort(400, message = 'Error_no_json')
         res = {'id': db.insert_order_db(data)}
+        if res['id'] == ["ERROR_serverDB_not_ready"]: abort(500, message='ERROR_serverDB_not_ready') 
+        logger.info(f"post orders for {res}")
         return {
             'data': res,
             'code': 201,
@@ -91,8 +105,9 @@ def configure_routes(app):
     @app.output(schemas.MessageOk, status_code=201)
     def put_good_id(good_id, data):
         if not data:
-            return abort(400, 'Error:no json')
+            return abort(400, message = 'Error_no_json')
         res = {'id': db.update_id_good_db(good_id, data)}
+        if res['id'] == ["ERROR_serverDB_not_ready"]: abort(500, message='ERROR_serverDB_not_ready') 
         if not res:
             return abort(404, 'Error:no id')
         try:
@@ -100,7 +115,7 @@ def configure_routes(app):
                 r.flushdb()
         except (redis.exceptions.ConnectionError, redis.exceptions.BusyLoadingError):
             print("ERROR get_goods_cached(): redis not ready!")
-
+        logger.info(f"put goods for {res}")
         return {
             'data': res,
             'code': 201,
@@ -110,10 +125,12 @@ def configure_routes(app):
     @app.output(schemas.MessageOk, status_code=204)  # if status 204 - no json
     def delete_good_id(good_id):
         res = db.delete_id_good_db(good_id)
+        if res == ["ERROR_serverDB_not_ready"]: abort(500, message='ERROR_serverDB_not_ready') 
         if res[-1] == '0':
-            return abort(404, 'Error:no id')
+            return abort(404, message='Error_no_id')
+        logger.info(f"delete goods for id={good_id}")
         return {
-            'data': 1,  # dont work because  MessageOk(Schema) forbid
+            'data': 1,
             'code': 204,
         }
 
@@ -135,11 +152,10 @@ def configure_routes(app):
             request=token_request,
             audience=oauth_functions.GOOGLE_CLIENT_ID
         )
-        print(f' ******************id_info=   {id_info}')
         email = id_info.get("email")
-        print(f'logged email = {email}')
         access_token = create_access_token(identity=email)
         refresh_token = create_refresh_token(identity=email)
+        logger.info(f"jwt token return succesfully for {email}")
         return jsonify(access_token=access_token, refresh_token=refresh_token)
 
 
@@ -148,7 +164,7 @@ def configure_routes(app):
     def refresh():
         identity = get_jwt_identity()
         access_token = create_access_token(identity=identity)
-        print('return new token in refresh')
+        logger.info(f'return new token in refresh for {identity}')
         return jsonify(access_token=access_token)
 
 
@@ -160,7 +176,7 @@ def configure_routes(app):
             with redis.Redis() as r:
                 output_redis = r.get('goods')
         except (redis.exceptions.ConnectionError, redis.exceptions.BusyLoadingError):
-            print("ERROR get_goods_cached(): redis not ready!")
+            logger.info("ERROR get_goods_cached(): redis not ready!")
 
 
         if output_redis:
@@ -174,8 +190,24 @@ def configure_routes(app):
                 with redis.Redis() as r:
                     r.set('goods', json.dumps(goods_cached))
             except (redis.exceptions.ConnectionError, redis.exceptions.BusyLoadingError):
-                print("ERROR get_goods_cached(): redis not ready!")
+                logger.info("ERROR get_goods_cached(): redis not ready!")
+        logger.info("return goods_cached ")
         return {
             'data': goods_cached,
+            'code': 200,
+        }
+
+    @app.get("/logs")
+    @app.input(schemas.LogsFilterIn, location = 'query')
+    @app.output(schemas.LogsOut(many=True), status_code=200)
+    def get_logs(query):
+        result = (mongo_functions.select_logs_from_mongo(query['timestart'],
+                                                      query['timeend'], query.get('module')))
+        if result == 1:
+            logger.info(f"Error get logs, server Mongo not ready")
+            abort(404, 'Error_Mongo_not_ready')
+        logger.info(f"return logs from Mongo")
+        return {
+            'data': result,
             'code': 200,
         }

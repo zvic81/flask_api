@@ -21,13 +21,19 @@ services:
     depends_on:
       - postgres
       - cache
+      - logs
   cache:
     container_name: redis-py
     image: redis
     restart: always
     ports:
       - "6379:6379"
-
+  logs:
+    container_name: mongo-logs
+    image: mongo:4.4.6
+    restart: always
+    ports:
+      - "27017:27017"
 
 
     # docker run -p 6379:6379 -d --network=host --name redis-py redis

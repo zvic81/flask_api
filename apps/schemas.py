@@ -1,4 +1,5 @@
 from apiflask import Schema, fields
+from apiflask.validators import OneOf
 from apiflask.validators import Range
 
 
@@ -59,6 +60,17 @@ class OrderIn(Schema):
 class MessageOk(Schema):
     id = fields.Integer()
 
-class LoginIn(Schema):  # one good with full fields
+class LoginIn(Schema):
     username = fields.String(required=True, metadata={'example': 'vic'})
     password = fields.String(metadata={'example': "mypass"})
+
+class LogsFilterIn(Schema):
+    timestart = fields.DateTime(required=True, metadata={'example': '2023-04-30 18:00:00'})
+    timeend = fields.DateTime(required=True, metadata={'example': '2023-05-01 18:00:00'})
+    module = fields.String(validate=OneOf(['all', 'app', 'routes']), metadata={'example': "routes"})
+
+class LogsOut(Schema):
+    level = fields.String()
+    message = fields.String()
+    module = fields.String()
+    timestamp = fields.DateTime()
