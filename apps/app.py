@@ -30,7 +30,6 @@ app.config["JWT_REFRESH_TOKEN_EXPIRES"] = timedelta(days=30)
 app.secret_key = 'BAD_SECRET_KEY'
 
 
-
 if __name__ == "__main__":
     if not is_mongo_run():
         logging.config.dictConfig(log_config.config_mongo)

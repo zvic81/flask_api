@@ -1,136 +1,110 @@
-import psycopg2
-from config import host, user, password, db_name, port
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+import logging
+
+from models import Base, Goods, Orders, Order_item
+import config
+
+engine = create_engine(
+    f'postgresql+psycopg2://{config.DATABASE_USER}:{config.DATABASE_PASSWORD}@{config.DATABASE_HOST}:{config.DATABASE_PORT}/{config.DATABASE_NAME}',
+    pool_pre_ping=True, echo=True
+)
+
+Base.metadata.create_all(engine)
+session_factory = sessionmaker(bind=engine)
+db_session = session_factory()
+logger = logging.getLogger('db')
 
 
-def connect_db(host=host, user=user, password=password, db_name=db_name):
-    try:
-        connection = psycopg2.connect(
-            host=host,
-            user=user,
-            password=password,
-            database=db_name,
-            port=port
-        )
-    except psycopg2.OperationalError:
-        print('Error: No BD server ready, try one more')
-        return 1
-    connection.autocommit = True
-    return connection
+def select_all_goods_db():
+    goods = db_session.query(Goods.id, Goods.name).all()
+    return goods
 
 
-# select * records from db and return list
-def select_all_goods_db() -> list:
-    connection = connect_db()
-    if connection == 1: return ["ERROR_serverDB_not_ready"]
-    with connection.cursor() as g:
-        g.execute("SELECT id, name FROM goods ORDER BY id;")
-        cnt = g.fetchall()
-        goods = []
-        for row in cnt:
-            goods.append({'id': row[0], 'name': row[1], })
-        close_db(connection)
-        return goods
+def select_all_orders_db(user_email: str):
+    orders = db_session.query(Orders).filter(
+        Orders.customer_email == user_email).all()
+    return orders
 
 
-# select all orders from db, return list of dictionaries
-def select_all_orders_db(user_email: str) -> list:
-    connection = connect_db()
-    if connection == 1: return  ["ERROR_serverDB_not_ready"]
-    with connection.cursor() as g:
-        g.execute(
-            "SELECT id, order_date, customer_name, customer_email, delivery_address, status, notes FROM orders WHERE customer_email=%s ORDER BY id;", (user_email,))
-        cnt = g.fetchall()
-        orders = []
-        for row in cnt:
-            orders.append({
-                'id': row[0],
-                'order_date': row[1],
-                'customer_name': row[2],
-                'customer_email': row[3],
-                'delivery_address': row[4],
-                'status': row[5],
-                'notes': row[6],
-            })
-        close_db(connection)
-        return orders
+def select_id_good_db(id: int):
+    goods = db_session.query(Goods).filter(Goods.id == id).one()
+    return goods
 
 
-# select id record from db and return dict
-def select_id_good_db(id: int) -> dict:
-    connection = connect_db()
-    if connection == 1: return  ["ERROR_serverDB_not_ready"]
-    with connection.cursor() as g:
-        g.execute(
-            "SELECT id,name,price,manufacture_date,picture_url FROM goods WHERE id=%s;", (id,))
-        cnt = g.fetchone()
-        goods = {}
-        goods['id'] = cnt[0]
-        goods['name'] = cnt[1]
-        goods['price'] = cnt[2]
-        goods['manufacture_date'] = cnt[3]
-        goods['picture_url'] = cnt[4]
-        close_db(connection)
-        return goods
+def insert_good_db(good_list: dict):
+    good = Goods(**good_list)
+    db_session.add(good)
+    db_session.commit()
+    return good.id
 
 
-# insert new good into db
-def insert_good_db(good_list: dict) -> list:
-    connection = connect_db()
-    if connection == 1: return  ["ERROR_serverDB_not_ready"]
-    with connection.cursor() as g:
-        g.execute("""
-                    INSERT INTO goods (name, price, manufacture_date, picture_url)
-        VALUES (%s,%s,%s,%s);""", (good_list.get('name'), good_list.get('price'), good_list.get('manufacture_date'), good_list.get('picture_url')))
-        g.execute("SELECT id FROM goods ORDER BY id DESC LIMIT 1;")
-        cnt = g.fetchone()
-    close_db(connection)
-    return cnt[0]
+def insert_order_db(order_list: dict):
+    good_items = order_list.pop('good_item')
+    order = Orders(**order_list)
+    db_session.add(order)
+    db_session.flush()
+    for g in good_items:
+        good = Order_item(**g, order_id=order.id, notes='temp')
+        db_session.add(good)
+    db_session.commit()
+    return order.id
 
 
-def insert_order_db(order_list: dict) -> int:
-    connection = connect_db()
-    if connection == 1: return  ["ERROR_serverDB_not_ready"]
-    with connection.cursor() as g:
-        g.execute("""
-                INSERT INTO orders (order_date, customer_name, customer_email, delivery_address, status, notes)
-                VALUES (%s,%s,%s,%s,%s,%s);""", (order_list.get('order_date'), order_list.get('customer_name'), order_list.get('customer_email'),
-                                                 order_list.get('delivery_address'), 'new_ord', order_list.get('notes')))
-        g.execute("SELECT id FROM orders ORDER BY id DESC LIMIT 1;")
-        cnt = g.fetchone()
-        goods = order_list.get('good_item')
-        for item in goods:
-            g.execute("""
-                     INSERT INTO order_item (ammount, notes, order_id, good_id)
-                     VALUES (%s,%s,%s,%s);""", (item.get('ammount'), 'notes null', cnt[0], item.get('good_id')))
-    close_db(connection)
-    return cnt[0]  # return id new order
-
-
-def update_id_good_db(id: int, good_list: dict) -> int:
-    connection = connect_db()
-    if connection == 1: return  ["ERROR_serverDB_not_ready"]
-    with connection.cursor() as g:
-        g.execute("SELECT COUNT(id) FROM goods WHERE id=%s", (id,))
-        cnt = g.fetchone()
-        if not cnt[0]:
-            close_db(connection)
-            return 0
-        g.execute("""
-                    UPDATE goods SET name=%s,price=%s,manufacture_date=%s,
-                    picture_url=%s WHERE id=%s;""", (good_list.get('name'), good_list.get('price'), good_list.get('manufacture_date'), good_list.get('picture_url'), id))
-    close_db(connection)
-    return 1
+def update_id_good_db(id: int, good_list: dict):
+    good = db_session.query(Goods).get(id)
+    for key, value in good_list.items():
+        setattr(good, key, value)
+    db_session.add(good)
+    db_session.commit()
+    return good.id
 
 
 def delete_id_good_db(id: int) -> str:
-    connection = connect_db()
-    if connection == 1: return  ["ERROR_serverDB_not_ready"]
-    with connection.cursor() as g:
-        g.execute("""DELETE FROM goods WHERE id=%s;""", (id,))
-    close_db(connection)
-    return g.statusmessage
+    c = db_session.query(Goods).filter(Goods.id == id)
+    if not db_session.query(c.exists()).scalar():
+        return -1
+    res = db_session.query(Goods).filter(Goods.id == id).delete()
+    db_session.commit()
+    return res
 
 
-def close_db(connection: any) -> None:
-    if connection:
-        connection.close()
+def init_db():
+    cnt = db_session.query(Goods).count()
+    if not cnt:
+        db_session.add_all([
+            Goods(name='Beer', price=112,
+                  manufacture_date='05/07/22', picture_url='pic112'),
+            Goods(name='Mushrooms', price=12,
+                  manufacture_date='05/07/22', picture_url='pic1/mush'),
+            Goods(name='keyboard', price=3,
+                  manufacture_date='05/07/20', picture_url='keyb1/c'),
+            Goods(name='iphone', price=345,
+                  manufacture_date='05/07/15', picture_url='apple.com'),
+            Goods(name='mouse', price=5, manufacture_date='05/01/12',
+                  picture_url='mouse.com'),
+        ])
+        db_session.add_all([
+            Orders(order_date='02/05/2014', customer_name='Sekretov',
+                   customer_email='secret@mail.ru', delivery_address='Apatity', status='new', notes='ww'),
+            Orders(order_date='02/05/2015', customer_name='Mihrin', customer_email='mihrin@mail.ru',
+                   delivery_address='kirovsk', status='temp', notes='aas'),
+            Orders(order_date='02/05/2031', customer_name='Zelenskyi',
+                   customer_email='zelo@mail.ru', delivery_address='Kyiev', status='ready', notes=' '),
+            Orders(order_date='02/05/2022', customer_name='Karlson', customer_email='karlson@mail.ru',
+                   delivery_address='Stohgolm', status='reset', notes='ee'),
+            Orders(order_date='02/05/2021', customer_name='Ivan', customer_email='ivan@n.r',
+                   delivery_address='prostokvash', status='deliv', notes='sas'),
+        ])
+        db_session.commit()
+        good1 = db_session.query(Goods).filter(Goods.name == 'keyboard').one()
+        orders1 = db_session.query(Orders).filter(
+            Orders.customer_name == 'Sekretov').one()
+        oi1 = Order_item(ammount=3, notes='notesss')
+        oi1.goods = good1
+        oi1.orders = orders1
+        db_session.add(oi1)
+        db_session.commit()
+
+
+init_db()
