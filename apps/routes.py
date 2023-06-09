@@ -1,66 +1,75 @@
-from flask import redirect, jsonify, request
-from apiflask import abort
-import requests
+from fastapi import APIRouter, Depends
+from fastapi.responses import RedirectResponse
+from schema import GoodIn
+# import requests
 from pip._vendor import cachecontrol
 import google.auth.transport.requests
 from google.oauth2 import id_token
-from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, jwt_required, get_jwt_identity
+# from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, jwt_required, get_jwt_identity
 import redis
 import json
 import time
 import logging
 
 import db
-import schemas
+
 import oauth_functions
 import mongo_functions
 
 
-jwt = JWTManager()
+# jwt = JWTManager()
 logger = logging.getLogger('my_log')
+router_goods = APIRouter(prefix="/api/v1", tags=["goods"],)
+router_orders = APIRouter(prefix="/api/v1", tags=["orders"],)
 
 
+@router_goods.get("/")
+def index():
+    return RedirectResponse("/docs")
+
+
+@router_goods.get("/goods")
+def get_goods():
+    goods = db.select_all_goods_db()
+    logger.info("return get('/goods')")
+    return {
+        'data': goods,
+        'code': 200,
+    }
+
+
+@router_orders.get("/orders")
+def get_orders():
+    orders = db.select_all_orders_db("mihrin@gmail.com")
+    logger.info(f"return get('/orders') for user ")
+    return {
+        'data': orders,
+        'code': 200,
+    }
+
+
+@router_goods.get("/goods/{good_id}")
+def get_good_id(good_id: int):
+    good = db.select_id_good_db(good_id)
+    logger.info(f"return get goods for id={good_id}")
+    return {
+        'data': good,
+        'code': 200,
+    }
+
+
+@router_goods.post("/goods")
+def create_good(good: GoodIn):
+    res = {'id': db.insert_good_db(good)}
+    return {
+        'data': res,
+        'code': 201,
+    }
+
+
+'''
 def configure_routes(app):
     jwt.init_app(app)
-
-    @app.get('/')
-    @app.doc(hide=True)
-    def index():
-        data = {'message': 'Hello!'}
-        logger.info("return index page")
-        return redirect("/docs", code=302)
-
-    @app.get('/goods')
-    @app.output(schemas.GoodsOut(many=True), status_code=200)
-    def get_goods():
-        goods = db.select_all_goods_db()
-        logger.info("return get('/goods')")
-        return {
-            'data': goods,
-            'code': 200,
-        }
-
-    @app.get('/orders')
-    @jwt_required()
-    @app.output(schemas.OrdersOut(many=True), status_code=200)
-    def get_orders():
-        current_user = get_jwt_identity()
-        orders = db.select_all_orders_db(current_user)
-        logger.info(f"return get('/orders') for user {current_user}")
-        return {
-            'data': orders,
-            'code': 200,
-        }
-
-    @app.get('/goods/<int:good_id>')
-    @app.output(schemas.GoodOut, status_code=200)
-    def get_good_id(good_id):
-        good = db.select_id_good_db(good_id)
-        logger.info(f"return get goods for id={good_id}")
-        return {
-            'data': good,
-            'code': 200,
-        }
 
     @app.post('/goods')
     @app.input(schemas.GoodIn)
@@ -196,3 +205,5 @@ def configure_routes(app):
             'data': result,
             'code': 200,
         }
+
+'''

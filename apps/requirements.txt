@@ -1,8 +1,7 @@
 psycopg2-binary==2.9.3
 sqlalchemy==1.3
-Flask==2.2.2
-apiflask
-flask-jwt-extended
+fastapi
+uvicorn[standard]
 google-auth-oauthlib
 pyopenssl
 redis

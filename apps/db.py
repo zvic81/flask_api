@@ -7,8 +7,7 @@ import config
 
 engine = create_engine(
     f'postgresql+psycopg2://{config.DATABASE_USER}:{config.DATABASE_PASSWORD}@{config.DATABASE_HOST}:{config.DATABASE_PORT}/{config.DATABASE_NAME}',
-    pool_pre_ping=True, echo=True
-)
+    pool_pre_ping=True, echo=False)
 
 Base.metadata.create_all(engine)
 session_factory = sessionmaker(bind=engine)
