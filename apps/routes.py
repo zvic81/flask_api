@@ -1,7 +1,5 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import RedirectResponse
-from schema import GoodIn
-# import requests
 from pip._vendor import cachecontrol
 import google.auth.transport.requests
 from google.oauth2 import id_token
@@ -12,10 +10,9 @@ import time
 import logging
 
 import db
-
+from schema import GoodIn, OrderIn
 import oauth_functions
 import mongo_functions
-
 
 # jwt = JWTManager()
 logger = logging.getLogger('my_log')
@@ -60,73 +57,57 @@ def get_good_id(good_id: int):
 
 @router_goods.post("/goods")
 def create_good(good: GoodIn):
-    res = {'id': db.insert_good_db(good)}
+    res = {'id': db.insert_good_db(good.dict())}
+    try:
+        with redis.Redis() as r:
+            r.flushdb()
+    except (redis.exceptions.ConnectionError, redis.exceptions.BusyLoadingError):
+        logger.info("ERROR get_goods_cached(): redis not ready!")
+    logger.info(f"post goods for {res}")
     return {
         'data': res,
         'code': 201,
     }
 
 
+@router_orders.post("/orders")
+def create_order(order: OrderIn):
+    res = {'id': db.insert_order_db(order.dict())}
+    logger.info(f"post orders for {res}")
+    return {
+        'data': res,
+        'code': 201,
+    }
+
+@router_goods.put("/goods/{good_id}")
+def put_good_id(good_id: int, good: GoodIn):
+    res = {'id': db.update_id_good_db(good_id, good.dict())}
+    try:
+        with redis.Redis() as r:
+            r.flushdb()
+    except (redis.exceptions.ConnectionError, redis.exceptions.BusyLoadingError):
+        print("ERROR get_goods_cached(): redis not ready!")
+    logger.info(f"put goods for {res}")
+    return {
+        'data': res,
+        'code': 200,
+    }
+
+@router_goods.delete("/goods/{good_id}")
+def delete_good_id(good_id):
+    res = db.delete_id_good_db(good_id)
+    if res == -1:
+        raise HTTPException(status_code=404, detail="Error_no_id")
+    logger.info(f"delete goods for id={good_id}")
+    return {
+        'data': res,
+        'code': 204,
+    }
+
 '''
 def configure_routes(app):
     jwt.init_app(app)
 
-    @app.post('/goods')
-    @app.input(schemas.GoodIn)
-    @app.output(schemas.MessageOk, status_code=201)
-    def create_good(data):
-        res = {'id': db.insert_good_db(data)}
-        try:
-            with redis.Redis() as r:
-                r.flushdb()
-        except (redis.exceptions.ConnectionError, redis.exceptions.BusyLoadingError):
-            logger.info("ERROR get_goods_cached(): redis not ready!")
-        logger.info(f"post goods for {res}")
-        return {
-            'data': res,
-            'code': 201,
-        }
-
-    @app.post('/orders')
-    @app.input(schemas.OrderIn)
-    @app.output(schemas.MessageOk, status_code=201)
-    def create_order(data):
-        res = {'id': db.insert_order_db(data)}
-        logger.info(f"post orders for {res}")
-        return {
-            'data': res,
-            'code': 201,
-        }
-
-    @app.put('/goods/<int:good_id>')
-    @app.input(schemas.GoodIn)
-    @app.output(schemas.MessageOk, status_code=200)
-    def put_good_id(good_id, data):
-        res = {'id': db.update_id_good_db(good_id, data)}
-        if not res:
-            return abort(404, 'Error:no id')
-        try:
-            with redis.Redis() as r:
-                r.flushdb()
-        except (redis.exceptions.ConnectionError, redis.exceptions.BusyLoadingError):
-            print("ERROR get_goods_cached(): redis not ready!")
-        logger.info(f"put goods for {res}")
-        return {
-            'data': res,
-            'code': 200,
-        }
-
-    @app.delete('/goods/<int:good_id>')
-    @app.output(schemas.MessageOk, status_code=204)  # if status 204 - no json
-    def delete_good_id(good_id):
-        res = db.delete_id_good_db(good_id)
-        if res == -1:
-            return abort(404, message='Error_no_id')
-        logger.info(f"delete goods for id={good_id}")
-        return {
-            'data': res,
-            'code': 204,
-        }
 
     @app.get('/login')
     def login():

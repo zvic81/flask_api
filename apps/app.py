@@ -12,6 +12,7 @@ from fastapi import FastAPI
 import logging
 import logging.config
 from log4mongo.handlers import MongoHandler
+
 from routes import router_goods, router_orders
 import log_config
 from mongo_functions import is_mongo_run
@@ -26,3 +27,7 @@ logger.info("app started!!!")
 app = FastAPI()
 app.include_router(router_goods)
 app.include_router(router_orders)
+# if __name__ == "__main__":
+#     import uvicorn
+#     uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
+ 
