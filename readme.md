@@ -3,9 +3,9 @@ Flask_api is a Python application for test API REST. It's the model of simple st
 
 Technologies used:
 - APIFlask
-- psycopg2
+- SQLAlchemy
 - pytest
-- FlaskJWT
+- Jose jwt
 - GoogleAuth
 - Docker compose
 - Github Action

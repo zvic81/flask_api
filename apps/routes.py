@@ -1,12 +1,13 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
+import requests
 from fastapi.responses import RedirectResponse
 from pip._vendor import cachecontrol
 import google.auth.transport.requests
 from google.oauth2 import id_token
-# from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, jwt_required, get_jwt_identity
 import redis
 import json
 import time
+from datetime import datetime
 import logging
 
 import db
@@ -14,10 +15,10 @@ from schema import GoodIn, OrderIn
 import oauth_functions
 import mongo_functions
 
-# jwt = JWTManager()
 logger = logging.getLogger('my_log')
-router_goods = APIRouter(prefix="/api/v1", tags=["goods"],)
-router_orders = APIRouter(prefix="/api/v1", tags=["orders"],)
+router_goods = APIRouter(tags=["goods"],)
+router_orders = APIRouter(tags=["orders"],)
+router_auth = APIRouter(tags=["auth"],)
 
 
 @router_goods.get("/")
@@ -36,9 +37,11 @@ def get_goods():
 
 
 @router_orders.get("/orders")
-def get_orders():
-    orders = db.select_all_orders_db("mihrin@gmail.com")
-    logger.info(f"return get('/orders') for user ")
+def get_orders(credentials: str = Depends(oauth_functions.oauth2_scheme)):
+    token = credentials.credentials
+    email = oauth_functions.verify_token(token)
+    orders = db.select_all_orders_db(email)
+    logger.info(f"return get('/orders') for user {email}")
     return {
         'data': orders,
         'code': 200,
@@ -79,6 +82,7 @@ def create_order(order: OrderIn):
         'code': 201,
     }
 
+
 @router_goods.put("/goods/{good_id}")
 def put_good_id(good_id: int, good: GoodIn):
     res = {'id': db.update_id_good_db(good_id, good.dict())}
@@ -93,6 +97,7 @@ def put_good_id(good_id: int, good: GoodIn):
         'code': 200,
     }
 
+
 @router_goods.delete("/goods/{good_id}")
 def delete_good_id(good_id):
     res = db.delete_id_good_db(good_id)
@@ -104,87 +109,81 @@ def delete_good_id(good_id):
         'code': 204,
     }
 
-'''
-def configure_routes(app):
-    jwt.init_app(app)
+
+@router_auth.get("/login")
+def login():
+    authorization_url, state = oauth_functions.flow.authorization_url()
+    return RedirectResponse(url=authorization_url)
 
 
-    @app.get('/login')
-    def login():
-        authorization_url, state = oauth_functions.flow.authorization_url()
-        return redirect(authorization_url, code=302)
+@router_auth.get("/callback")
+def callback(request: Request):
+    oauth_functions.flow.fetch_token(authorization_response=str(request.url))
+    credentials = oauth_functions.flow.credentials
+    request_session = requests.session()
+    cached_session = cachecontrol.CacheControl(request_session)
+    token_request = google.auth.transport.requests.Request(
+        session=cached_session)
 
-    @app.get("/callback")
-    def callback():
-        oauth_functions.flow.fetch_token(authorization_response=request.url)
-        credentials = oauth_functions.flow.credentials
-        request_session = requests.session()
-        cached_session = cachecontrol.CacheControl(request_session)
-        token_request = google.auth.transport.requests.Request(
-            session=cached_session)
+    id_info = id_token.verify_oauth2_token(
+        id_token=credentials._id_token,
+        request=token_request,
+        audience=oauth_functions.GOOGLE_CLIENT_ID
+    )
+    email = id_info.get("email")
+    print(f"Success auth for {email=}")
+    access_token = oauth_functions.create_access_token({"email": email})
+    return {"access_token": access_token, "token_type": "bearer"}
 
-        id_info = id_token.verify_oauth2_token(
-            id_token=credentials._id_token,
-            request=token_request,
-            audience=oauth_functions.GOOGLE_CLIENT_ID
-        )
-        email = id_info.get("email")
-        access_token = create_access_token(identity=email)
-        refresh_token = create_refresh_token(identity=email)
-        logger.info(f"jwt token return succesfully for {email}")
-        return jsonify(access_token=access_token, refresh_token=refresh_token)
 
-    @app.get("/refresh_token")
-    @jwt_required(refresh=True)
-    def refresh():
-        identity = get_jwt_identity()
-        access_token = create_access_token(identity=identity)
-        logger.info(f'return new token in refresh for {identity}')
-        return jsonify(access_token=access_token)
+@router_auth.get("/refresh_token")
+def refresh_token(credentials: str = Depends(oauth_functions.oauth2_scheme)):
+    token = credentials.credentials
+    access_token = oauth_functions.refresh_token(token)
+    logger.info(f"refresh token for {token}")
+    return {"access_token": access_token, "token_type": "bearer"}
 
-    @app.get("/goods_cached")
-    @app.output(schemas.GoodsOutCached(many=True), status_code=200)
-    def get_goods_cached():
-        output_redis = None
-        goods_cached = []
+
+@router_goods.get("/goods_cached")
+def get_goods_cached():
+    output_redis = None
+    goods_cached = []
+    try:
+        with redis.Redis() as r:
+            output_redis = r.get('goods')
+    except (redis.exceptions.ConnectionError, redis.exceptions.BusyLoadingError):
+        logger.info("ERROR get_goods_cached(): redis not ready!")
+
+    if output_redis:
+        goods_cached = json.loads(output_redis)
+    else:
+        tmp = db.select_all_goods_db()
+        for i in tmp:
+            goods_cached.append(
+                {'id': i[0], 'name': i[1], 'price': len(i[1]) + 0.99})
+            time.sleep(0.9)
         try:
             with redis.Redis() as r:
-                output_redis = r.get('goods')
+                r.set('goods', json.dumps(goods_cached))
         except (redis.exceptions.ConnectionError, redis.exceptions.BusyLoadingError):
             logger.info("ERROR get_goods_cached(): redis not ready!")
+    logger.info("return goods_cached ")
+    return {
+        'data': goods_cached,
+        'code': 200,
+    }
 
-        if output_redis:
-            goods_cached = json.loads(output_redis)
-        else:
-            tmp = db.select_all_goods_db()
-            for i in tmp:
-                goods_cached.append(
-                    {'id': i[0], 'name': i[1], 'price': len(i[1]) + 0.99})
-                time.sleep(0.9)
-            try:
-                with redis.Redis() as r:
-                    r.set('goods', json.dumps(goods_cached))
-            except (redis.exceptions.ConnectionError, redis.exceptions.BusyLoadingError):
-                logger.info("ERROR get_goods_cached(): redis not ready!")
-        logger.info("return goods_cached ")
-        return {
-            'data': goods_cached,
-            'code': 200,
-        }
 
-    @app.get("/logs")
-    @app.input(schemas.LogsFilterIn, location='query')
-    @app.output(schemas.LogsOut(many=True), status_code=200)
-    def get_logs(query):
-        result = (mongo_functions.select_logs_from_mongo(query['timestart'],
-                                                         query['timeend'], query.get('module')))
-        if result == 1:
-            logger.info(f"Error get logs, server Mongo not ready")
-            abort(404, 'Error_Mongo_not_ready')
-        logger.info(f"return logs from Mongo")
-        return {
-            'data': result,
-            'code': 200,
-        }
-
-'''
+@router_goods.get("/logs")
+def get_logs(timestart: datetime = "2023-06-25T00:53:00", timeend: datetime = "2023-06-28T00:53:00", module: str = "all"):
+    print(timestart, timeend)
+    result = (mongo_functions.select_logs_from_mongo(
+        timestart, timeend))  # , query.get('module')))
+    if result == 1:
+        logger.info(f"Error get logs, server Mongo not ready")
+        raise HTTPException(status_code=404, detail="Mongo not ready")
+    logger.info(f"return logs from Mongo")
+    return {
+        'data': result,
+        'code': 200,
+    }

@@ -1,11 +1,9 @@
 '''
-Simple RestAPI server with APIFlask, postgresql (psycopg2)
+Simple RestAPI server with FastAPI, SQLAlchemy
 run module, open http://localhost:5000 for Swagger UI
 or use Postman
-for saving swagger openAPI schema to file use command in terminal.
 pwd must be the same as where app.py
-flask spec --output openapi.json
-uvicorn main:app --reload
+uvicorn app:app --reload --host 127.0.0.1 --port 5000
 '''
 from datetime import timedelta
 from fastapi import FastAPI
@@ -13,7 +11,7 @@ import logging
 import logging.config
 from log4mongo.handlers import MongoHandler
 
-from routes import router_goods, router_orders
+from routes import router_goods, router_orders, router_auth
 import log_config
 from mongo_functions import is_mongo_run
 
@@ -27,7 +25,7 @@ logger.info("app started!!!")
 app = FastAPI()
 app.include_router(router_goods)
 app.include_router(router_orders)
-# if __name__ == "__main__":
-#     import uvicorn
-#     uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
- 
+app.include_router(router_auth)
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("app:app", host="127.0.0.1", port=5000, reload=True)
