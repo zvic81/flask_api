@@ -55,7 +55,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://127.0.0.1:5000/logs?timestart=2023-04-30 18:00:00&timeend=2023-05-03 18:00:00&module=routes",
+					"raw": "http://127.0.0.1:5000/logs?timestart=2008-09-15T15:53:00&timeend=2008-09-15T15:53:00",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -70,15 +70,16 @@
 					"query": [
 						{
 							"key": "timestart",
-							"value": "2023-04-30 18:00:00"
+							"value": "2008-09-15T15:53:00"
 						},
 						{
 							"key": "timeend",
-							"value": "2023-05-03 18:00:00"
+							"value": "2008-09-15T15:53:00"
 						},
 						{
 							"key": "module",
-							"value": "routes"
+							"value": "routes",
+							"disabled": true
 						}
 					]
 				}
